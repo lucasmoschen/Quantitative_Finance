@@ -1,4 +1,4 @@
-This is a repository for R studies in the subject Quantitative Finance, a mixture of Econometrics and Probability.
+This is a repository for R studies in the subject Quantitative Finance, a mixture of Econometric and Probability.
 
 To run the examples, I use R Markdown. In some R enviroment, as RStudio faça: 
 
