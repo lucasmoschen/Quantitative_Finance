@@ -1,7 +1,7 @@
 ---
-title: "R Markdown Homework Template"
-author: "NAME HERE"
-affiliation: "UNIVERSITY HERE"
+title: "Finanças Quantitativas: Lista 1"
+author: "Lucas Machado Moschen"
+affiliation: "Fundação Getulio Vargas"
 abstract:
 thanks:
 keywords:
@@ -30,50 +30,88 @@ header-includes:
 
 \vspace{0.25in}
 
+# Problema 1.1
 
+*Assuma que * $F_1(x)$ *e* $F_2(x)$ *são cdfs que satisfazem* $F_1(x) \leq F_2(x)$ *para todo* $x$. 
 
-# 1. "PROBLEM NUMBER ONE"
+1. *Qual das duas distribuições tem cauda inferior mais pesada? Explique.*
 
+**Resposta:** Suponha que ambas as distribuições se extendem para $-\infty$. Se $X_i \sim F_i(x), i=1,2$, sabemos que $P[X_2 \leq \pi^{(2)}_p] = p = P[X_1 \leq \pi^{(1)}_p] \leq P[X_2 \leq \pi^{(1)}_p] \implies \pi^{(1)}_p \geq \pi^{(2)}_p$, onde $\pi^{(i)}_p$ é função quantil das distribuições $F_i(x), i=1,2$. Desta maneira, o quantil da primeira distribuição vai mais devagar para $-\infty$ e, portanto, a segunda curva tem cauda inferior mais pesada.
 
-This is a simple homework assignment template. Notice that in the previous line we can create a header for our problem number by using a single "#". The text is then automatically bolded and indented. Below we will create a sublist. This should be used if problems have more than one part.
+2. *Qual das duas distribuições tem cauda superior mais pesada? Explique.*
 
+**Resposta:** Suponha que ambas as distribuições se extendem para $\infty$. Pelo mesmo argumento utilizado na primeira pergunta, podemos observar que quando $p \to 1$, o quantil da primeira curva cresce mais rapidamente e, consequentemente, a primeira curva terá causa superior mais pesada. 
 
-a. "PROBLEM NUMBER ONE, PART A"
+3. *Se estas duas distribuições são propostas para modelar o retorno de um dado portifolio no próximo mês e se você é perguntado para computar* $VaR_{0.01}$ *para este portifolio neste período, qual dessas duas distribuiçĩes resultaria o maior "value at risk"*. 
 
+**Resposta:** Observe que se $P^i_{t+1} - P^i_{t}, i=1,2$ indica o retorno modeladado pela distribuição 1 e 2, respectivamente. Assim 
 
-b.
+$P[P^2_{t+1} - P^2_t < - VaR^2_p] = p = P[P^1_{t+1} - P^1_t < - VaR^1_p] \leq P[P^2_{t+1} - P^2_t < - VaR^1_p]$
 
+Desta forma, como já observamos, $-VaR^2_p \leq -VaR^1_p \implies VaR_p^2 \geq VaR_p^1$ e obtemos que se calcularmos $VaR_p$ utilizando a segunda distribuição, ele terá um resultado maior. 
 
-c.
+# Problema 1.2
 
+1. *Em R, gere uma* $N = 1024$ *amostras da distribuição exponencial com taxa* $r = 0.2$ *. Chame* $X$ *o vetor com as amostras.* 
+**Resposta:**
 
-d.
-
-
-e.
-
-
-
-
-# 2. "PROBLEM NUMBER TWO"
-
-
-Suppose we need to input an R chunk into our homework file. In this case, the following syntax should be used. Note that "'''" signifies we are include chunks of code (We may also tweak the options as necessary).
-
-
-```{r tidy = TRUE, message = FALSE, warning = FALSE, error = FALSE}
-#input R code here. Examples:
-#define R list
-x = c(1,2,3,4,5)
-#make plot
-plot(x)
+```{r}
+# Gerando variável aleatória X:
+U = runif(n = 1024, min = 0, max = 1)
+# Usamos a universalidade da Uniforme e a distribuição F da exponencial
+r = 0.2
+F <- function(x, r){
+  return <-  1 - exp(-r*x)
+}
+invF <- function(x,r){
+  return <- -1/r*log(1 - x)
+}
+X = invF(U,r)
+print(X[0:10])
 ```
 
-Below the R code, we can provide additional descriptions and/or explain our code more thoroughly.
+2. *Plote no mesmo gráfico a densidade exata de* $X$ *e o histograma de* $X$.
 
+**Resposta:**
 
+```{r}
+# Calculando o histograma
+h <- hist(X, breaks = 30, col = 'red', main = 'Comparing sample and theorical')
 
-# 3. "AND REPEAT...."
+xfit <- seq(0, max(X),length= 50)
+# Calculando a distribuição exponencial 
+yfit <- dexp(xfit,rate = 0.2 )
+yfit <- yfit*diff(h$mids[1:2])*length(X)
+lines(xfit, yfit, col="blue", lwd = 2)
+
+legend(25, 100, legend=c("Sample", "Theorical"),
+       col=c("red", "blue"), lty=1:2, cex=0.8)
+
+```
+
+3. *Plote no mesmo gráfico a densidade exata de* $X$ *e uma estimativa da densidade kernel de* $X$.
+
+```{r}
+xfit <- seq(0, max(X),length= 40)
+
+# A distribuição exponencial 
+yfit <- dexp(xfit,rate = 0.2)
+# A estimação da densidade kernel
+yden <- density(X, bw = 0.5)
+#Plotes
+plot(yden$x, yden$y, col='red', xlim = c(1,max(X)), type = 'l', main = "Comparing Kernel Estimation and Theoretical",
+     xlab = "X", ylab = "Density")
+lines(xfit, yfit, col="blue", lwd = 2)
+
+legend(20, 0.10, legend=c("Kernel Estimation", "Theorical"),
+       col=c("red", "blue"), lty=1:2, cex=0.8)
+```
+
+4. *Compare os dois plotes e explique as razões das diferenças. Diga qual estimativa você prefere, e explique porquê.*
+
+**Resposta:**  Observe que tanto o histograma quanto a estimação kernel da densidade se utilizam dos $N$ dados. O histograma pode ser escrito em forma de uma função kernel, só que uma descontínua, já que tem um valor caso $x$, o valor da função, e $x_i$, uma amostra, estão no mesmo bin, e $0$ caso não estejam. No caso da estimação kernel, essa diferença é suave, bastando escolher uma função suave. Os saltos da aproximação no caso do histograma é determinado pelo número de bins, enquanto no caso da estimação kernel é o parâmetro "bandwidth", logo podemos ter uma função tão suave quanto queremos. Desta maneira, é preferível essa estimação kernel, pois suavizamos a função e podemos obter resultados mais precisos com a densidade almejada. 
+
+# Problem 1.3
 
 ```{r tidy = TRUE, message = FALSE, warning = FALSE, error = FALSE}
 #again, we can input our R code here.
