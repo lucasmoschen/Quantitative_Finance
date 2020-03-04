@@ -126,3 +126,7 @@ legend(20, 0.10, legend=c("Kernel Estimation", "Theorical"),
 3. Esse caso é oposto ao 2, o gráfico está quase todo a cima da diagonal, o que indica que quando $p \to 0$, a cauda da distribuição XX é mais pesada do que TT. Isso também é corroborado com o fato de TT ser uma distribuição com suporte positivo, pelo menos sua grande parte de área. Entretanto, quando $p \to 1$, a distribuição de TT terá curva mais pesada, analogamente. 
 
 4. Neste último caso, vemos duas distribuições em suma com suporte positivo. A escala dos eixos, como de todas as anteriores, são bem diferentes. Nesse caso, a diagonal emcobre toda a curva, mas não faz tanto sentido em falar cauda inferior mais pesada. Já quando $p \to 1$, a distribuição TT é mais rápida, o que siginifica que ela é uma distribuição com cauda superior mais pesada. 
+
+# Problema 1.4
+
+# Problema 1.9
