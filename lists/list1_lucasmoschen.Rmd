@@ -36,7 +36,7 @@ header-includes:
 
 1. *Qual das duas distribuições tem cauda inferior mais pesada? Explique.*
 
-**Resposta:** Suponha que ambas as distribuições se extendem para $-\infty$. Se $X_i \sim F_i(x), i=1,2$, sabemos que $P[X_2 \leq \pi^{(2)}_p] = p = P[X_1 \leq \pi^{(1)}_p] \leq P[X_2 \leq \pi^{(1)}_p] \implies \pi^{(1)}_p \geq \pi^{(2)}_p$, onde $\pi^{(i)}_p$ é função quantil das distribuições $F_i(x), i=1,2$. Desta maneira, o quantil da primeira distribuição vai mais devagar para $-\infty$ e, portanto, a segunda curva tem cauda inferior mais pesada.
+**Resposta:** Suponha que ambas as distribuições se extendem para $-\infty$. Se $X_i \sim F_i(x), i=1,2$, sabemos que $P[X_2 \leq \pi^{(2)}_p] = p = P[X_1 \leq \pi^{(1)}_p] \leq P[X_2 \leq \pi^{(1)}_p] \implies \pi^{(1)}_p \geq \pi^{(2)}_p$, onde $\pi^{(i)}_p$ é função quantil das distribuições $F_i(x), i=1,2$. Podemos ver isso considerando o contrário. Nesse caso existiria um ponto nos intervalos de p-quantil possíveis que a desigualde oposta vale, porém isso afirmaria que em um subconjunto pequeno, a desigualdade inicial seria contradita, absudo. Desta maneira, o quantil da primeira distribuição vai mais devagar para $-\infty$ e, portanto, a segunda curva tem cauda inferior mais pesada.
 
 2. *Qual das duas distribuições tem cauda superior mais pesada? Explique.*
 
@@ -44,7 +44,7 @@ header-includes:
 
 3. *Se estas duas distribuições são propostas para modelar o retorno de um dado portifolio no próximo mês e se você é perguntado para computar* $VaR_{0.01}$ *para este portifolio neste período, qual dessas duas distribuiçĩes resultaria o maior "value at risk"*. 
 
-**Resposta:** Observe que se $P^i_{t+1} - P^i_{t}, i=1,2$ indica o retorno modeladado pela distribuição 1 e 2, respectivamente. Assim 
+**Resposta:** Observe que se $P^i_{t+1} - P^i_{t}, i=1,2$ indica o retorno modelado pela distribuição 1 e 2, respectivamente. Assim 
 
 $P[P^2_{t+1} - P^2_t < - VaR^2_p] = p = P[P^1_{t+1} - P^1_t < - VaR^1_p] \leq P[P^2_{t+1} - P^2_t < - VaR^1_p]$
 
@@ -57,16 +57,7 @@ Desta forma, como já observamos, $-VaR^2_p \leq -VaR^1_p \implies VaR_p^2 \geq 
 
 ```{r}
 # Gerando variável aleatória X:
-U = runif(n = 1024, min = 0, max = 1)
-# Usamos a universalidade da Uniforme e a distribuição F da exponencial
-r = 0.2
-F <- function(x, r){
-  return <-  1 - exp(-r*x)
-}
-invF <- function(x,r){
-  return <- -1/r*log(1 - x)
-}
-X = invF(U,r)
+X = rexp(n = 1024, rate = 0.2)
 print(X[0:10])
 ```
 
@@ -143,16 +134,18 @@ legend(20, 0.15, legend=c("Kernel Estimation", "Theorical"),
 2. *Agora assuma que* $x_1, x_2, ..., x_m$ *e* $y_1,y_2,...,y_n$ *são amostras univariadas de possivelmente duas distribuições diferentes. Em cada uma das seguintes situações, desenhe o Q-Q plote de Y contra X como dado pelo comando qqplot(X,Y) quando:*
 
 ```{r}
-X = rlnorm(100000, 0, 1)
-Y1 = rcauchy(100000, 0, 1)
-Y2 = rnorm(100000, 0, 1)
+X = rlnorm(10000, 0, 1)
+Y1 = rcauchy(10000, 0, 1)
+Y2 = rnorm(10000, 0, 1)
 ```
 
 2.1 $x_1, x_2, ..., x_m$ *é uma amostra da distribuição log-normal* $LN(0,1)$, *e* $y_1, y_2, ..., y_n$ *é uma amostra da distribuição de Cauchy* $C(0,1)$. 
 
 **Resposta:**
 ```{r}
-qqplot(X,Y1, main = 'Q-Q Plot de C(0,1) contra LN(0,1)', col = 'red', pch = 16, cex = 0.5)
+qqplot(X,Y1, 
+       main = 'Q-Q Plot de C(0,1) contra LN(0,1)', 
+       col = 'red', pch = 16, cex = 0.5)
 x <- seq(min(X), max(X), 0.01)
 lines(x,x)
 ```
@@ -161,8 +154,49 @@ lines(x,x)
 
 **Resposta:**
 ```{r}
-qqplot(X,Y2,  main = 'Q-Q Plot de N(0,1) contra LN(0,1)', col = 'blue', pch = 16, cex = 0.5)
+qqplot(X,Y2,  
+       main = 'Q-Q Plot de N(0,1) contra LN(0,1)', 
+       col = 'blue', pch = 16, cex = 0.5)
 lines(x,x)
 ```
   
 # Problema 1.9
+
+*O objetivo deste problema é desenvolver e usar um gerador de números aleatórios caseiro para a distribuição exponencial. Paraaa primeira questão desse proble, você não é permitiido para usar qualquer das função exp.*
+
+1. *Lembre a fórmula da cdf* $F_{\lambda}(x) = P[X \leq x]$ *de uma variável aleatória* $X$ *com uma distribuição exponencial de parâmetro* $\lambda$. *Escreva uma função R myrexp que recebe os parâmetros N e LAMBDA e retorna um vetor numérico de tamanho N contendo N amostras da variável aleatória da distribuição exponencial*
+
+**Resposta:**
+
+```{r}
+# Lembrando da CDF da Distribuição Exponencial
+F <- function(x, r){
+  return <-  1 - exp(-r*x)
+}
+# Construindo a função inversa da CDF
+invF <- function(x,r){
+    return <- -1/r*log(1 - x)
+}
+# Construindo minha função rexp. 
+myrexp <- function(N, LAMBDA = 1){
+  # Gero uma variável uniforme e utilizo a universalidade da Uniforme. 
+  U = runif(n = N, min = 0, max = 1)
+  return <- invF(U,r = LAMBDA)
+}
+```
+
+2. *Use sua função myrexp para gerar uma amostra de tamanho* $N=1024$ *da distribuição exponencial com média* $1.5$, *use a função do R para gerar uma amostra de tamanho 2N e produza o Q-Q Plot das amostras. Você está satisfeito com a performace da simulação da função? Explique porquê.* 
+
+**Resposta:** Estou satisfeito com a performace por dois motivos: Ele é embasado em conceitos matemáticos de probabilidade: Universalidade da Amostra. E também porque graficamente, a curva ficou muito próxima a reta $y=x$, o que indica que as distribuições são com alta probabilidade equivalentes, como vemos no gráfico abaixo. 
+
+```{r}
+# Gerando uma amostra aleatória
+# Se a média é 1.5, a taxa é 1/1.5
+X = myrexp(N = 1024, LAMBDA = 1/1.5)
+Y = rexp(n = 2*1024, rate = 1/1.5)
+
+#Plotting Q-Q Plot
+qqplot(X,Y, col = 'green', pch = 16, cex = 0.5, 
+       main = 'Q-Q Plot da função rexp (R) contra a função myrexp (Pessoal)')
+lines(seq(min(X,Y), max(X,Y), 0.01),seq(min(X,Y), max(X,Y), 0.01))
+```
