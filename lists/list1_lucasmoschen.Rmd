@@ -113,6 +113,16 @@ legend(20, 0.10, legend=c("Kernel Estimation", "Theorical"),
 
 # Problem 1.3
 
-```{r tidy = TRUE, message = FALSE, warning = FALSE, error = FALSE}
-#again, we can input our R code here.
-```
+*Dê a interpretação de cada um dos seguintes Q-Q-plots*
+
+![Q-Q-Plot obtidos como print da imagem do livro](../data/image1-3.png)
+
+**Resposta:**
+
+1. Observe quando $p \to 0$, o plote está abaixo da diagonal, o que significa que a distribuição Normal tem cauda menos pesada do que a YY, pois a função quantil está mais lenta ao tender a $-\infty$. No mesmo sentido, quando $p \to 1$, a curva fica acima da diagonal, logo a função quantil de YY cresce mais rápido, e ela tem curva superior mais pesada. Além disso, a escala dos dois eixos é muito diferente. 
+
+2.  Temos uma distribuição onde os q-quantis estão em grande parte na parte negativa, logo já podemos observar que essa distribuição esta deslocada para os valores negativos e, portanto, tem cauda mais pesada do que a Normal. O mesmo ocorre quando $p \to 1$, visto que o plote também está abaixo da diagonal. Assim, imagina-se qua distribuição tenha se deslocado para a esquerda e a normal tenha ficado com cauda mais pesada na parte superior. 
+
+3. Esse caso é oposto ao 2, o gráfico está quase todo a cima da diagonal, o que indica que quando $p \to 0$, a cauda da distribuição XX é mais pesada do que TT. Isso também é corroborado com o fato de TT ser uma distribuição com suporte positivo, pelo menos sua grande parte de área. Entretanto, quando $p \to 1$, a distribuição de TT terá curva mais pesada, analogamente. 
+
+4. Neste último caso, vemos duas distribuições em suma com suporte positivo. A escala dos eixos, como de todas as anteriores, são bem diferentes. Nesse caso, a diagonal emcobre toda a curva, mas não faz tanto sentido em falar cauda inferior mais pesada. Já quando $p \to 1$, a distribuição TT é mais rápida, o que siginifica que ela é uma distribuição com cauda superior mais pesada. 
