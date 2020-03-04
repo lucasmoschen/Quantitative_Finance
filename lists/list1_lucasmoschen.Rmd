@@ -76,16 +76,16 @@ print(X[0:10])
 
 ```{r}
 # Calculando o histograma
-h <- hist(X, breaks = 30, col = 'red', main = 'Comparing sample and theorical')
+h <- hist(X, breaks = 30, freq = FALSE, col = 'red', 
+          main = 'Comparing sample and theorical')
 
 xfit <- seq(0, max(X),length= 50)
 # Calculando a distribuição exponencial 
-yfit <- dexp(xfit,rate = 0.2 )
-yfit <- yfit*diff(h$mids[1:2])*length(X)
-lines(xfit, yfit, col="blue", lwd = 2)
+yfit <- dexp(xfit,rate = 0.2)
 
-legend(25, 100, legend=c("Sample", "Theorical"),
-       col=c("red", "blue"), lty=1:2, cex=0.8)
+lines(xfit, yfit, col="blue", lwd = 2)
+legend(25, 0.15, legend=c("Sample", "Theorical"),
+       col=c("red", "blue"), fill = c('red', 'blue'), cex=0.8)
 
 ```
 
@@ -99,12 +99,13 @@ yfit <- dexp(xfit,rate = 0.2)
 # A estimação da densidade kernel
 yden <- density(X, bw = 0.5)
 #Plotes
-plot(yden$x, yden$y, col='red', xlim = c(1,max(X)), type = 'l', main = "Comparing Kernel Estimation and Theoretical",
+plot(yden$x, yden$y, col='red', xlim = c(1,max(X)), type = 'l', 
+     main = "Comparing Kernel Estimation and Theoretical",
      xlab = "X", ylab = "Density")
 lines(xfit, yfit, col="blue", lwd = 2)
 
-legend(20, 0.10, legend=c("Kernel Estimation", "Theorical"),
-       col=c("red", "blue"), lty=1:2, cex=0.8)
+legend(20, 0.15, legend=c("Kernel Estimation", "Theorical"),
+       col=c("red", "blue"), lty=1:1, cex=0.8)
 ```
 
 4. *Compare os dois plotes e explique as razões das diferenças. Diga qual estimativa você prefere, e explique porquê.*
@@ -129,4 +130,39 @@ legend(20, 0.10, legend=c("Kernel Estimation", "Theorical"),
 
 # Problema 1.4
 
+1. *Articule propriedades das distribuições XX e YY que você pode inferir com esses plotes.*
+
+![Q-Q-Plot obtidos como print da imagem do livro](../data/image1-4.png)
+
+**Resposta:** 
+
+- Distribuição XX: Primeiro podemos inferir que a escala da distribuição é similar a da normal, com alta probabilidade. Quando $p \to 0$, a curva está acima da reta $y = x$, logo podemos inferir que a distribuição normal tem cauda inferior mais pesada do que a distribuição em questão. Também podemos inferir que quando $p \to 1$, pela curva estar a cima da curva $y = x$, corrobora com o fato da distribuição ter cauda superior mais pesada do que a normal. (Observo que a reta plotada **não** é $y=x$.). Também podemos inferir que a distribuição esta concentrada em torno do quantil $-2$, já que quase metade metade da área da normal está concentrada ao redor desse ponto. 
+
+- Distribuição YY: Nesse caso já vemos uma grande diferença de escala das duas distribuições, o que indica que a normal é mais concentrada do que a distribuição $YY$. Também observamos que a cauda da da distribuição YY é mais pesada, tanto na parte inferior quando na parte superior. Por fim, observe que através da reta descrita no gráfico, existe um intervalo em que a curva pode ser praticamente descrita por uma reta. Isto significa que ao dobrar o quantil da normal, com a mesma área, dobraremos o quantil da distribuição, logo elas são semelhantes nessa intervalo, dada uma transformação linear. 
+
+2. *Agora assuma que* $x_1, x_2, ..., x_m$ *e* $y_1,y_2,...,y_n$ *são amostras univariadas de possivelmente duas distribuições diferentes. Em cada uma das seguintes situações, desenhe o Q-Q plote de Y contra X como dado pelo comando qqplot(X,Y) quando:*
+
+```{r}
+X = rlnorm(100000, 0, 1)
+Y1 = rcauchy(100000, 0, 1)
+Y2 = rnorm(100000, 0, 1)
+```
+
+2.1 $x_1, x_2, ..., x_m$ *é uma amostra da distribuição log-normal* $LN(0,1)$, *e* $y_1, y_2, ..., y_n$ *é uma amostra da distribuição de Cauchy* $C(0,1)$. 
+
+**Resposta:**
+```{r}
+qqplot(X,Y1, main = 'Q-Q Plot de C(0,1) contra LN(0,1)', col = 'red', pch = 16, cex = 0.5)
+x <- seq(min(X), max(X), 0.01)
+lines(x,x)
+```
+
+2.2 $x_1, x_2, ..., x_m$ *é uma amostra da distribuição log-normal* $LN(0,1)$, *e* $y_1, y_2, ..., y_n$ *é uma amostra da distribuição de Gaussiana* $N(0,1)$. 
+
+**Resposta:**
+```{r}
+qqplot(X,Y2,  main = 'Q-Q Plot de N(0,1) contra LN(0,1)', col = 'blue', pch = 16, cex = 0.5)
+lines(x,x)
+```
+  
 # Problema 1.9
