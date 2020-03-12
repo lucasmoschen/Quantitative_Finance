@@ -1,0 +1,46 @@
+---
+title: "Volatility Smile"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+abstract:
+thanks:
+keywords:
+date: \today
+output:
+  pdf_document:
+    highlight: default
+    citation_package:
+    keep_tex: false
+    fig_caption: true
+    latex_engine: pdflatex
+fontsize: 11pt
+geometry: margin=1in
+bibliography:
+biblio-style:
+header-includes:
+- \usepackage{indentfirst}
+- \usepackage{graphicx}
+- \usepackage{geometry}
+- \usepackage{subfigure}
+- \usepackage{amsmath}
+- \usepackage{listings}
+- \usepackage{tikz}
+- \usetikzlibrary{matrix}
+---
+
+## Modelo de Black-Scholes 
+
+É um modelo matemático para a dinâmica do mercado financeiro contendo instrumentos derivativos de investimento. Através desse modelo, podemos deduzir a fórmula de Black-Scholes que estima teroricamente o preço da opção Europeia. 
+
+No tempo $t$, quando o preço do ativo é $S$ e a taxa de juros é $r$, o preço BS do call Europeu com strike $K$ e maturidade $T$, temos a fórmula de Black-Scholes. Observe que ele assume que a volatilidade $\sigma$ é constante, se variarmos o strike.  Assim, $r, T, K, S, \sigma \mapsto BS(r, T, K, S, \sigma)$. 
+
+Tudo mais constante, apenas variando $\sigma$, temos que essa fórmula é bijetiva com a volatilidade e ela é chamada de \textbf{volatilidade implícita} \textit{(implied)}. 
+
+Para mostrarmos que a suposição do modelo de tomar a volatilidade constante nao é coerente para o mercado, vejamos a chamada curva \textbf{volatilidade sorriso}. 
+
+## Volatility Smile
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
