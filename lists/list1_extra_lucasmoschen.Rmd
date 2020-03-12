@@ -32,15 +32,24 @@ header-includes:
 
 É um modelo matemático para a dinâmica do mercado financeiro contendo instrumentos derivativos de investimento. Através desse modelo, podemos deduzir a fórmula de Black-Scholes que estima teroricamente o preço da opção Europeia. 
 
-No tempo $t$, quando o preço do ativo é $S$ e a taxa de juros é $r$, o preço BS do call Europeu com strike $K$ e maturidade $T$, temos a fórmula de Black-Scholes. Observe que ele assume que a volatilidade $\sigma$ é constante, se variarmos o strike.  Assim, $r, T, K, S, \sigma \mapsto BS(r, T, K, S, \sigma)$. 
+No tempo $t$, quando o preço do ativo é $S$ e a taxa de juros é $r$, o preço BS do call Europeu com strike $K$ e maturidade $T$, temos a fórmula de Black-Scholes. Observe que ele assume que a volatilidade $\sigma$ é constante, se variarmos o strike.  Assim, $S, r, K, T, \sigma \mapsto BS(S, r, K, T, \sigma)$. 
+
+```{r warning = FALSE, message = FALSE}
+library(Rsafd)
+print(bscall(0.04, 1, 100, 0.1, 0.15))
+```
 
 Tudo mais constante, apenas variando $\sigma$, temos que essa fórmula é bijetiva com a volatilidade e ela é chamada de \textbf{volatilidade implícita} \textit{(implied)}. 
 
 Para mostrarmos que a suposição do modelo de tomar a volatilidade constante nao é coerente para o mercado, vejamos a chamada curva \textbf{volatilidade sorriso}. 
 
+## Dados
+
+Os dados que utilizarei serão das ações da Apple (AAPL), referente ao dia 12 de março de 2020 com maturação em 17 de abril de 2020, quando $S = 248,23$. Os dados foram conseguidos no Yahoo Finance e podem ser encontrados [\textbf{aqui}](https://finance.yahoo.com/quote/AAPL/options?date=1587081600&p=AAPL&straddle=false)
+
 ## Volatility Smile
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
 ```
 
