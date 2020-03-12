@@ -45,11 +45,21 @@ Para mostrarmos que a suposição do modelo de tomar a volatilidade constante na
 
 ## Dados
 
-Os dados que utilizarei serão das ações da Apple (AAPL), referente ao dia 12 de março de 2020 com maturação em 17 de abril de 2020, quando $S = 248,23$. Os dados foram conseguidos no Yahoo Finance e podem ser encontrados [\textbf{aqui}](https://finance.yahoo.com/quote/AAPL/options?date=1587081600&p=AAPL&straddle=false)
+Os dados que utilizarei serão das ações da Apple (AAPL), referente ao dia 12 de março de 2020 com maturação em 17 de abril de 2020, quando $S = 248,23$. Os dados foram conseguidos no Yahoo Finance e podem ser encontrados [\textbf{aqui}](https://finance.yahoo.com/quote/AAPL/options?date=1587081600&p=AAPL&straddle=false). 
+
+No repositório onde encontra esse arquivo, você pode conferir os mesmos dados no formato CSV, restrito à data já confirmada.
 
 ## Volatility Smile
 
-```{r pressure, echo=FALSE}
+Agora, obseve que não vemos a volatilidade implícita como constante, como esperávamos do modelo, por hipótese. Logo, esse desenho acaba sendo parecido a um sorriso, por isso, \textit{volatility smile}. 
 
+```{r, echo=FALSE}
+# getting data
+aapl = read.csv("../data/AAPL_Calls_17-04-2020.csv")
+aapl <- aapl[order(aapl$Strike),]
+Strike = aapl$Strike
+ImpVol = aapl$Implied.Volatility
+
+plot(Strike, ImpVol, pch = 16, col = "blue", main = "AAPL Volatility Smile")
 ```
 
