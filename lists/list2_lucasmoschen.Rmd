@@ -312,4 +312,111 @@ Podemos inferir que os dados podem ser modelados pelo método POT, dado que o p-
 
 # Problema 2.6
 
+*This problem requires the data set DSP. The entries of this numeric vector represent the daily closing values of the S&P 500 index between the beginning of January 1960 and September 18, 2001.*
+
+```{r}
+data("DSP", DSP, package = "Rsafd")
+data("MSP", MSP, package = "Rsafd")
+```
+|    1. *Compute the vector of log-returns and call it DSPLRet.*
+
+### Resposta: 
+
+```{r}
+DSPLRet = diff(log(DSP), lag = 1)
+```
+
+|    2. *We now use the data set MSP. The entries of this numeric vector represent minute by minute quotes of the S&P 500 on September 10, 1998. Compute the corresponding log-return vector and call it MSPLRet.*
+
+### Resposta:
+
+```{r}
+MSPLRet = diff(log(MSP), lag = 1)
+```
+
+|    3. *Produce a Q-Q plot of the empirical distributions of the two log-return vectors, and comment. In particular, say if what you see is consistent with the claim that the properties of the daily series are shared by the minute by minute series. Such an invariance property is called self-similarity. It is often encountered when dealing with fractal objects. *
+
+### Resposta: 
+
+```{r}
+qqplot(MSPLRet, DSPLRet, ylab = "Dayly", xlab = "Minute by Minute", main = "Q-Q Plot empirical distributions")
+abline(a = 0, b = 1, col = "green")
+abline(a = 0, b = 20, col = "red")
+```
+
+De fato essa propriedade é observada. A escala de longe não é a mesma, o que faz muito sentido, visto que proporcionalmente você pode ganhar muito mais em um dia do que no outro, sem contar que os outliers podem ser muito mais distantes. A reta em verde é desenhada apenas para ter uma noção que não é a mesma distribuição que rege ambos os dados, enquanto a linha em vermelho evidencia que é a mesma distribuição, com diferença apenas em um fator constante. 
+
+|    4. *Compute the empirical means and variances of the DSPLRet and MSPLRet data. Assuming that these data sets are Gaussian, would you say that the two distributions are the same in view of these two statistics?*
+
+### Resposta: 
+
+```{r}
+DSPLRet.mean = mean(DSPLRet)
+DSPLRet.var = var(DSPLRet)
+
+MSPLRet.mean = mean(MSPLRet)
+MSPLRet.var = var(MSPLRet)
+
+cat("Mean DSPLRet: ", DSPLRet.mean, "\n")
+cat("Variance DSPLRet: ", DSPLRet.var, "\n")
+cat("Mean MSPLRet: ", MSPLRet.mean, "\n")
+cat("Variance MSPLRet: ", MSPLRet.var)
+```
+
+Se esse fosse o caso, saberíamos que $\frac{y -\mu_1}{\sigma_1} = \frac{x - \mu_2}{\sigma_2}$, já que ambos seriam uma normal padrão. Assim, $y = \frac{\sigma_1}{\sigma_2}(x - \mu_2) + \mu_1$ seria a reta que esperaríamos encontrar. Mas como observamos no gráfico, essa reta de longe está dos dados. 
+
+```{r}
+qqplot(MSPLRet, DSPLRet, ylab = "Dayly", xlab = "Minute by Minute", main = "Q-Q Plot empirical distributions")
+abline(a = -MSPLRet.mean*(DSPLRet.var/MSPLRet.var) + DSPLRet.mean, 
+       b = DSPLRet.var/MSPLRet.var, col = "blue")
+```
+
+|    5. *Fit GPDs to the DSPLRet and MSPLRet data, and compare the distributions one more time by comparing the shape parameters.*
+
+### Resposta: 
+
+```{r warning = FALSE, message=FALSE}
+DSPLRet.est <- gpd.tail(DSPLRet, plot = FALSE)
+MSPLRet.est <- gpd.tail(MSPLRet, lower = -0.0005, upper = 0.0005, plot = FALSE)
+
+cat("Shape Parameter Upper DSPLRet: ", DSPLRet.est$upper.par.ests[2], "\n")
+cat("Shape Parameter Lower DSPLRet: ", DSPLRet.est$lower.par.ests[2], "\n")
+cat("Shape Parameter Upper MSPLRet: ", MSPLRet.est$upper.par.ests[2], "\n")
+cat("Shape Parameter Lower MSPLRet: ", MSPLRet.est$lower.par.ests[2], "\n")
+
+```
+
 # Problema 2.8
+
+*The goal of this problem is to highlight some of the properties of the estimates obtained with the command fit.gpd when fitting a GPD to a data sample* $x_1, ... , x_n$. *We assume that the distribution of the data has two tails (one extending to* $-\infty$ *and the other one to* $\infty$, *and we are interested in understanding the effect of the choice of the thresholds lower and upper.*
+
+1. *What should you expect from the estimate* $\hat{\xi_+}$ *given by the function fit.gpd if you use a threshold upper:*
+
+### Respostas:
+
+|    1.1. *Exactly equal to 2.*
+
+Eu esperaria que ele estimasse o parâmetro muito próximo do verdadeiro, visto que ele usaria os dados da distribuição da cauda de Pareto. 
+
+|    1.2. *Greater than 5.*
+
+A função teria menos pontos para estimar a curva, e essa quantidade seria bem menor, por que a maior parte da cauda está concentrada entre $2$ e $5$. A variância da distribuição acabaria sendo aumentada. 
+
+|    1.3. *Between 0 and 1*
+
+Nesse caso, muitos pontos seriam adicionados à estimativa. O parâmetro tentaria encaixar uma cauda em uma distribuição com uma descontinuidade severa, assim ela ficaria, provavelmente, abaixo da curva original. 
+
+2. *What should you expect from the estimate* $\hat{\xi_{-}}$ *given by the function fit.gpd if you use a threshold lower:*
+
+|    2.1. *Exactly equal to* $-2$.
+
+Eu esperaria que ele estimasse o parâmetro muito próximo do verdadeiro, visto que ele usaria os dados da distribuição da cauda de Pareto, agora para o lado esquerdo. Nesse caso, a estimativa do percentil 1 seria muito próxima da verdadeira. 
+
+|    2.2. *Smaller than* $-8$.
+
+A quantidade de dados seria tão pequena, que não seria uma estimativa consistente. A parte principal da cauda à esquerda seria perdida, que fica entre $-2$ e $-5$. Como em 1.2, a variância seria aumentada. Nesse caso, a estimativa do primeiro percentil seria menor do que o desejado, devido ao aumento da variância da distribuição estimada. 
+
+|    2.3. *Between 0 and* $-1$. 
+
+Da mesma forma que comentei no item 1.3, essa curva seria rebaixada para que se encaixasse na descontinuidade central da distribuição. O parâmetro ficaria menor do que o desejado, já que tentaria encaixar uma cauda a partir de valores já baixos. Nesse caso, a estimativa do percentil 1 seria maior, pois a curva seria um pouco mais achatada, e o valor seria mais próximo de $0$.
+
