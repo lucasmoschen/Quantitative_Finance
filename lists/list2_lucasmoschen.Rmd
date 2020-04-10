@@ -1,0 +1,90 @@
+---
+title: "Finanças Quantitativas: Lista 2"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+date: "10 de abril de 2020"
+output: pdf_document
+---
+
+# Execício 1 
+
+*Calcule a média da distribuição GPD e use essa informação para mostrar que a mean excess function* $e(l)$ *é linear em* $l$. 
+
+## Resposta: 
+
+Seja $X \sim GPD(m, \lambda, \xi)$, onde $m \in \mathbb{R}, \lambda > 0, \xi \in \mathbb{R}$. Assim, a distribuição acumulada de $X$ é: 
+$$ F_{m, \lambda, \xi}(x) = 
+\begin{cases}
+1 - (1 + \xi\frac{x - m}{\lambda})^{-\frac{1}{\xi}}, \xi \neq 0 \\
+1 - \exp(- \frac{x-m}{\lambda}), \xi = 0
+\end{cases}
+$$
+E a pdf da distribuição é 
+$$ f_{m, \lambda, \xi}(x) = 
+\begin{cases}
+ \frac{1}{\lambda}(1 + \xi\frac{x - m}{\lambda})^{-\frac{1}{\xi} - 1}, \xi \neq 0 \\
+ \frac{1}{\lambda}\exp(- \frac{x-m}{\lambda}), \xi = 0
+\end{cases}
+$$
+Considere o caso em que $1 > \xi > 0$. Desta forma a média será finita.
+
+\begin{align}
+ \mathbb{E}[X] &= \int_{m}^{\infty} xf_{m, \lambda, \xi}(x)dx  \\ 
+      &= \int_{m}^{\infty} x(\frac{1}{\lambda}(1 + \xi\frac{x - m}{\lambda})^{-\frac{1}{\xi} - 1})dx \\
+      &= - x\cdot(1 + \xi\frac{x-m}{\lambda})^{-\frac{1}{\xi}}\Big|_m^\infty + \int_m^{\infty} (1 + \xi\frac{x-m}{\lambda})^{-\frac{1}{\xi}} dx \\
+      &= \lim_{x\to\infty} -\frac{x}{(1 + \xi\frac{x - m}{\lambda})^{-\frac{1}{\xi}}} + m + \int_m^{\infty} (1 + \xi\frac{x-m}{\lambda})^{-\frac{1}{\xi}} dx
+\end{align}
+
+Note que esse limite é 0, bastando aplicar L'Hôspital, e notando que $\frac{1}{\xi} > 1$. Fazendo a substituição $u = 1 + \xi\frac{x - m}{\lambda} \implies \frac{\lambda}{\xi}du = dx$ . Portanto: 
+
+\begin{align}
+\mathbb{E}[X] &= m + \frac{\lambda}{\xi}\int_1^{\infty} u^{-\frac{1}{\xi}} dx \\
+     &= m + \frac{\lambda}{\xi}\frac{\xi}{-1 + \xi}u^{-\frac{1}{\xi} + 1}\Big|_1^{\infty} \\
+     &= m + \frac{\lambda}{-1 + \xi}[\lim_{u\to\infty} u^{\frac{\xi - 1}{\xi}} - 1^{\frac{\xi - 1}{\xi}}] \\
+     &= m + \frac{\lambda}{1 - \xi}
+\end{align}
+
+No caso em que $\xi = 0$, o cálculo fica  relativamente mais fácil. Utilizando o mesmo processo, chagamos que $E[X] = m - \lambda[\exp(-\frac{x-m}{\lambda})]_m^{\infty} = m + \lambda$, como esperávamos. 
+
+Sabemos que se a distribuição de uma variável aleatória $X$ é $GDP(m, \lambda, \xi)$, então a distribuição excesso $F_l(x)$, dado um nível $l$, será uma distribuição $GDP(0, \lambda + \xi(l - m), \xi)$. Desta maneira, a função de excesso médio é uma função linear em $l$, utilizando o valor esperado dessa distriibuição, como vimos acima: 
+
+\begin{equation}
+  e(l) = \mathbb{E}[F_l(x)] = 0 + \frac{\lambda + \xi(l - m)}{1 - \xi} = \frac{\lambda - m\xi}{1 - \xi} + \frac{\xi}{1 - \xi}\cdot l = C + D\cdot l 
+\end{equation}
+
+Além disso, ela será constante caso $\xi = 0$. 
+
+# Problema 2.2 
+
+1. *For this first question we assume that * $X$ *is a random variable with standard Pareto distribution with shape parameter * $\xi$  *(location parameter* $m = 0$ *, scale parameter* $\lambda = 1$*).*
+
+1.1. *Give a formula for the c.d.f. of *$X$*. Explain*
+
+### Resposta:
+
+Utilizando a distribuição da GDP encontrada no exercício 1, temos que a cdf da distribuição de pareto padrão pode ser escrita como: 
+
+$$ F_{\xi}(x) = 
+\begin{cases}
+1 - (1 + \xi x)^{-\frac{1}{\xi}}, \xi \neq 0 \\
+1 - \exp(-x), \xi = 0
+\end{cases}
+$$
+
+O suporte para $\xi \geq 0$ é formado pelos reais não negativos. Caso contrário, será $0 \leq x \leq -\frac{1}{\xi}$. 
+
+1.2. *Derive a formula for the quantile function of *$X$*.*
+
+1.3. *How would you generate Monte Carlo samples from the distribution of *$X$ *if you only had a random generator for the uniform distribution on *$[0, 1]$ *at your disposal?*
+
+2. *Give a formula for the density *$f_Y(y)$  *of a random variable* $Y$ *which is equal to an exponential random variable with mean 2 with probability 1/3 and to the negative of a classical Pareto random variable with shape parameter* $\psi = 1/2$ *(location* $m = 0$ *and scale* $\lambda = 1$*) with probability 2/3. Explain.*
+
+3. *How would you generate Monte Carlo samples from the distribution of* $Y$*? * 
+
+# Problema 2.3
+
+# Problema 2.4
+
+# Problema 2.6
+
+# Problema 2.8
