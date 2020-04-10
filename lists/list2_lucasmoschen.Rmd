@@ -229,13 +229,86 @@ points(a, E2(a, 0.5), type = 'l', col = "red")
 
 *This problem attempts to quantify the goodness of fit resulting from our GPD analysis of samples with heavy tails.*
 
-1. *Use the method described in the text to fit a GPD to the PCS index, and generate a Monte Carlo random sample from the fitted distribution five times the size of the original data sample.*
+|    1. *Use the method described in the text to fit a GPD to the PCS index, and generate a Monte Carlo random sample from the fitted distribution five times the size of the original data sample.*
 
-2. *Produce a Q-Q plot to compare graphically the two samples and comment.*
+### Resposta: 
 
-3. *Use a two-sample Kolmogorov-Smirnov goodness-of-fit test to quantify the qualitative results of the previous question. NB: Such a test is performed in R with the command ks.test. Check the help files for details on its use and the returned values.*
+Considero inicialmente o gráfico gerado por *sample.plot* para analisar a variação de $\xi$ dado o limiar.As linhas azuis indicam limites que ou tomam muitos dados da amostra, ou tomam poucos, considerando valores razoáveis. O limiar vermelho é a estimada considerada razoável para o parâmetro $\xi$. 
 
-4. *Same questions as above for the weekly log-returns on the S&P data.*
+```{r warning = FALSE, message = FALSE }
+# Getting the data and ordering it
+library(Rsafd)
+data(PCS, "PCS",  package = "Rsafd")
+# Seeing the sample.plot graphic.
+shape.plot(PCS$Col2)
+abline(a = 1, b = 0, col = "red")
+abline(v = 2, col = "blue")
+abline(v = 7, col = "blue")
+```
+
+Agora façamos as estimativas utilizando método POT descrito no capítulo: 
+
+```{r warning = FALSE, message = FALSE }
+# Using the method gpd.tail to estimate in the tail the parameters. 
+PCS.est <- gpd.tail(PCS$Col2, one.tail = TRUE, upper = 4, plot = FALSE, upper.method = "ml")
+print(PCS.est$upper.par.ests)
+```
+
+Por fim, façamos uma amostra Monte Carlo usando o método *qgpd*, que é o mesmo princípio da inversa da distribuição acumulada, como já destacada nos exercícios anteriores. Logo:
+
+```{r warning = FALSE, message=FALSE}
+PCSsample <- gpd.1q(runif(5*PCS.est$n), PCS.est)
+```
+
+|    2. *Produce a Q-Q plot to compare graphically the two samples and comment.*
+
+### Resposta: 
+
+Considere o Q-Q plot. A linha em verde representa a reta $y = x$. Note que existe dados extremamente longe da média em nossa amostra. Isso faz sentido, porque esperávamos isso de uma GDP, então não precisamos nos importar tanto com esses valores extremos. Os pontos aparentam ter se encaixado com a reta disposta, o que significa que as duas distribuições são muito semelhantes. De fato, os maiores erros se localizam em dados nos extremos.  
+
+```{r}
+qqplot(PCS$Col2, PCSsample, ylab = "Amostra PCS GDP", xlab = "Dados Reais", main = "Q-Q Plot das amostras")
+abline(a = 0, b = 1, col = "green")
+```
+
+
+|    3. *Use a two-sample Kolmogorov-Smirnov goodness-of-fit test to quantify the qualitative results of the previous question. NB: Such a test is performed in R with the command ks.test. Check the help files for details on its use and the returned values.*
+
+### Resposta:
+
+Usando método indicado, obtemos que, sendo $D$ a estatística de teste e o $p-valor$ quase $0$:  
+
+```{r message=F, warning=F}
+ks.test(PCS$Col2, PCSsample, alternative = "t")
+```
+A definição de p-valor dada no livro do DeGroot é 
+
+*"p-value . In general, the p-value is the smallest level* $\alpha_0$ *such that we would reject the null-hypothesis at level* $\alpha_0$ *with the observed data."*
+
+Desta maneira, para qualquer teste com tamanho maior que $p-value$, nós rejeitamos a hipótese nula com os dados observados. 
+Nesse caso, o p-valor é alto, o que significa que não rejeitamos a hiótese nula. Além de olhar para o p-valor, vemos que a estatística de teste é menor do que o referencial adotado pelo teste utilizado. Como a hipótese nula não foi rejeitada, quantificamos a ideia das amostras terem sido geradas a partir da mesma distribuição. 
+
+|    4. *Same questions as above for the weekly log-returns on the S&P data.*
+
+### Respota: 
+
+Façamos o mesmo processo para S&P data. 
+
+```{r message=FALSE, warning=FALSE}
+data("WSPLRet", WSPLRet, package = "Rsafd")
+
+WSPLRet.est <- gpd.tail(WSPLRet, one.tail = FALSE, lower = -0.02, upper = 0.02, upper.method = "ml", plot = FALSE)
+print(WSPLRet.est$upper.par.ests)
+
+WSPLRetsample <- gpd.2q(runif(5*WSPLRet.est$n), WSPLRet.est)
+
+qqplot(WSPLRet.est$data, WSPLRetsample, xlab = "Dados Reais", ylab = "Amostra GDP", main = "Q-Q Plot das amostras" )
+abline(a = 0, b = 1, col = "green")
+
+print(ks.test(WSPLRet, WSPLRetsample, alternative = "t"))
+```
+
+Podemos inferir que os dados podem ser modelados pelo método POT, dado que o p-valor é bem alto. Também observamos no Q-Q Plot que as amostras tem distribuições similares, difererindo apenas por alguns pontos nos extremos. 
 
 # Problema 2.6
 
