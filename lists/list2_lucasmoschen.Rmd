@@ -58,7 +58,7 @@ Além disso, ela será constante caso $\xi = 0$.
 
 1. *For this first question we assume that * $X$ *is a random variable with standard Pareto distribution with shape parameter * $\xi$  *(location parameter* $m = 0$ *, scale parameter* $\lambda = 1$*).*
 
-1.1. *Give a formula for the c.d.f. of *$X$*. Explain*
+|    1.1. *Give a formula for the c.d.f. of *$X$*. Explain*
 
 ### Resposta:
 
@@ -71,17 +71,86 @@ $$ F_{\xi}(x) =
 \end{cases}
 $$
 
-O suporte para $\xi \geq 0$ é formado pelos reais não negativos. Caso contrário, será $0 \leq x \leq -\frac{1}{\xi}$. 
+O suporte para $\xi \geq 0$ é formado pelos reais não negativos. Caso contrário, será $0 \leq x \leq -\frac{1}{\xi}$. Observe que ela será uma CDF, visto que é uma função contínua (combinação de funções contínuas), $\lim_{x \to -\infty} F_{\xi}(x) = 0$ e $\lim_{x \to \infty} F_{\xi}(x) = 1 - \lim_{x \to \infty} \frac{1}{(1 + \xi x)^{\frac{1}{\xi}}} = 1$, como desejamos de uma CDF. Em particular já sabíamos que isso aconteceria por ser um caso especial da ditribuição GPD.
 
-1.2. *Derive a formula for the quantile function of *$X$*.*
+|    1.2. *Derive a formula for the quantile function of *$X$*.*
 
-1.3. *How would you generate Monte Carlo samples from the distribution of *$X$ *if you only had a random generator for the uniform distribution on *$[0, 1]$ *at your disposal?*
+### Resposta: 
 
-2. *Give a formula for the density *$f_Y(y)$  *of a random variable* $Y$ *which is equal to an exponential random variable with mean 2 with probability 1/3 and to the negative of a classical Pareto random variable with shape parameter* $\psi = 1/2$ *(location* $m = 0$ *and scale* $\lambda = 1$*) with probability 2/3. Explain.*
+Seja $Q(p)$ a função quantil. Quando $\xi = 0$, basta que $Q(p) = F_{\xi}^{-1} (x) = -\log (1 - p) = \log \frac{1}{1 - p}$. 
 
-3. *How would you generate Monte Carlo samples from the distribution of* $Y$*? * 
+Se $\xi \neq 0$, seja $F_{\xi}(x) = p$. Assim $p = 1 - (1 + \xi x)^{-\frac{1}{\xi}} \implies (1 + \xi x) = (1 - p)^{-\xi} \implies Q(p) = \frac{1}{\xi}((1 - p)^{-\xi} - 1)$. 
+
+Agora podemos agrupar e temos que em $0 \leq p < 1$, a função quantil é: 
+
+$$Q(p) = \begin{cases}
+\frac{1}{\xi}((1 - p)^{-\xi} - 1), \xi \neq 0 \\
+\log \frac{1}{1 - p}, \xi = 0 
+\end{cases}$$ 
+
+|    1.3. *How would you generate Monte Carlo samples from the distribution of *$X$ *if you only had a random generator for the uniform distribution on *$[0, 1]$ *at your disposal?*
+
+### Resposta: 
+
+Primeiro gere uma amostra de tamanho $n$ da distribuição uniforme. Ao usar a universalidade da uniforme, podemos aplicar a função quantil encontrada a cada ponto da amostra e assim teremos uma amostra Monte Carlo da distribuição de $X$. 
+
+2. *Give a formula for the density *$f_Y(y)$  *of a random variable* $Y$ *which is equal to an exponential random variable with mean 2 with probability 1/3 and to the negative of a classical Pareto random variable with shape parameter* $\xi = 1/2$ *(location* $m = 0$ *and scale* $\lambda = 1$*) with probability 2/3. Explain.*
+
+### Resposta:
+
+Seja $X_1 \sim Exp(\frac{1}{2})$ e $X_2 \sim Pareto(\frac{1}{2})$. Assim, pela lei da probabilidade total: 
+\begin{align} 
+P(Y \leq y) &= P(Y \leq y | Y = X_1)P(Y = X_1) + P(Y \leq y | Y = - X_2)P(Y = - X_2) \\
+            &= (1 - \exp(-\frac{1}{2}y))\cdot \frac{1}{3} + P(X_2 \geq -y)\cdot \frac{2}{3} \\
+            &= \frac{1}{3}(1 - \exp(-\frac{1}{2}y)) + \frac{2}{3}(1 - \frac{y}{2})^{-2} 
+\end{align}
+
+Porém, temos que nos ater aos suportes dessas distribuições. Se $y < 0$, teremos que a $P(X_1 \leq y) = 0$, logo $P(Y \leq y) =  \frac{2}{3}(1 - \frac{y}{2})^{-2}$. Agora, se $y \geq 0$, temos que $P(X_2 \geq -y) \geq P(X_2 \geq 0) = 1$, logo: 
+$$F_Y(y) = \begin{cases}
+\frac{2}{3}(1 - \frac{y}{2})^{-2}, y < 0 \\
+\frac{1}{3}(1 - \exp(-\frac{1}{2}y)) + \frac{2}{3}, y \geq 0 
+\end{cases}
+$$
+Observe que os limites ao infinito, de ambos os lados ocorrem conforme esperávamos e que essa função é contínua em todos os pontos. Logo é uma CDF bem determinada. Além disso, ela é diferenciável em todos os pontos, com excessão do $0$, pois as derivadas laterais são diferetes. Portanto 
+
+$$f_Y(y) = \begin{cases}
+\frac{2}{3}(1 - \frac{y}{2})^{-3}, y < 0 \\
+\frac{1}{6}(\exp(-\frac{1}{2}y)), y > 0
+\end{cases}$$
+
+3. *How would you generate Monte Carlo samples from the distribution of Y ?*
+
+### Resposta: 
+
+Gero uma amostra de tamanho $n$ da distribuição uniforme no intervalo $[0,1]$, inicicialmente. Como a densidade é sempre positiva, a distribuição acumulada é invertível. Após a expressão da função quantil, para cada ponto da amostra, calculo a função. Pela universalidade da uniforme, terei uma amostra Monte Carlo dessa distribuição. Confira a função quantil:
+
+$$Q(p) = \begin{cases}
+2 - (\frac{8}{3p})^{\frac{1}{2}}, 0 < p \leq \frac{2}{3} \\
+\log(\frac{1}{(3 - 3p)^2}), \frac{2}{3} < p < 1
+\end{cases}
+$$
 
 # Problema 2.3
+
+*In this problem, we study the loss distribution of a portfolio over a fixed period whose length does not play any role in the analysis. Loss is understood as the negative part of the return defined as* $L = \max(0, -R)$. *We assume that a fixed level* $\alpha \in (0, 1)$ *is given, and we denote by* $VaR_{\alpha}$ *the Value at Risk (VaR) at the level* $\alpha$ *of the portfolio over the period in question. In the present context, this VaR is the* $100(1 - \alpha)$ *-percentile of the loss distribution. This is consistent with the definition used in the text. The purpose of the problem is to derive a formula for the expected loss given that the loss is assumed to be larger than the value at risk.* 
+
+1. *For this question, we assume that the loss distribution is exponential with rate* $r$.
+
+|    1.1. *Give a formula for the c.d.f. of* $L$. *Explain.*
+|    1.2. *Derive a formula for* $VaR_{\alpha}$.
+|    1.3. *Give a formula for the expected loss given that the loss is larger than* $VaR_{\alpha}$.
+
+2. *For this question, we assume that the loss distribution is the standard Pareto distribution with shape parameter* $\xi$, *location parameter* $m = 0$ *and scale parameter* $\lambda = 1$. 
+
+|    2.1. *Give a formula for the c.d.f. of* $L$. *Explain.*
+|    2.2. *Derive a formula for* $VaR_{\alpha}$.
+|    2.3. *Give a formula for the expected loss given that the loss is larger than* $VaR_{\alpha}$.
+
+3. *The expected short fall (also known as the conditional VaR) at the level $\alpha$ is the expected loss conditioned by the fact that the loss is greater than or equal to* $VaR_{\alpha}$. *The goal of this question is to quantify the differences obtained when using it as a measure of risk in the two loss models considered in questions 1 and 2.*
+
+|    3.1. *For each* $\alpha \in (0, 1)$, *derive an equation that the rate parameter* $r$ *and the shape parameter* $\xi$ *must satisfy in order for the values of* $VaR_{\alpha}$ *computed in questions 1.2 and 2.2 to be the same.* 
+
+|    3.2. *Assuming that the parameters* $r$ *and* $\xi$ *satisfy the relationship derived in question 3.1 above, compare the corresponding values of the expected short fall in the models of questions 1 and 2 and comment on the differences.*
 
 # Problema 2.4
 
