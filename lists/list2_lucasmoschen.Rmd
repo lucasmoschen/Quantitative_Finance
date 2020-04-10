@@ -100,12 +100,12 @@ Primeiro gere uma amostra de tamanho $n$ da distribuição uniforme. Ao usar a u
 
 Seja $X_1 \sim Exp(\frac{1}{2})$ e $X_2 \sim Pareto(\frac{1}{2})$. Assim, pela lei da probabilidade total: 
 \begin{align} 
-P(Y \leq y) &= P(Y \leq y | Y = X_1)P(Y = X_1) + P(Y \leq y | Y = - X_2)P(Y = - X_2) \\
-            &= (1 - \exp(-\frac{1}{2}y))\cdot \frac{1}{3} + P(X_2 \geq -y)\cdot \frac{2}{3} \\
+\mathbb{P}(Y \leq y) &= \mathbb{P}(Y \leq y | Y = X_1)\mathbb{P}(Y = X_1) + \mathbb{P}(Y \leq y | Y = - X_2)\mathbb{P}(Y = - X_2) \\
+            &= (1 - \exp(-\frac{1}{2}y))\cdot \frac{1}{3} + \mathbb{P}(X_2 \geq -y)\cdot \frac{2}{3} \\
             &= \frac{1}{3}(1 - \exp(-\frac{1}{2}y)) + \frac{2}{3}(1 - \frac{y}{2})^{-2} 
 \end{align}
 
-Porém, temos que nos ater aos suportes dessas distribuições. Se $y < 0$, teremos que a $P(X_1 \leq y) = 0$, logo $P(Y \leq y) =  \frac{2}{3}(1 - \frac{y}{2})^{-2}$. Agora, se $y \geq 0$, temos que $P(X_2 \geq -y) \geq P(X_2 \geq 0) = 1$, logo: 
+Porém, temos que nos ater aos suportes dessas distribuições. Se $y < 0$, teremos que a $\mathbb{P}(X_1 \leq y) = 0$, logo $\mathbb{P}(Y \leq y) =  \frac{2}{3}(1 - \frac{y}{2})^{-2}$. Agora, se $y \geq 0$, temos que $\mathbb{P}(X_2 \geq -y) \geq \mathbb{P}(X_2 \geq 0) = 1$, logo: 
 $$F_Y(y) = \begin{cases}
 \frac{2}{3}(1 - \frac{y}{2})^{-2}, y < 0 \\
 \frac{1}{3}(1 - \exp(-\frac{1}{2}y)) + \frac{2}{3}, y \geq 0 
@@ -137,22 +137,105 @@ $$
 1. *For this question, we assume that the loss distribution is exponential with rate* $r$.
 
 |    1.1. *Give a formula for the c.d.f. of* $L$. *Explain.*
+
+### Resposta: 
+
+Se $L \sim Exp(r)$, então a sua cdf, descrita pela função $F_L$:
+
+$$F_L(x) = \begin{cases}
+1 - \exp(-rx), x \geq 0 \\
+0, x < 0
+\end{cases}$$
+
 |    1.2. *Derive a formula for* $VaR_{\alpha}$.
+
+### Resposta: 
+
+Nesse exercício, $VaR_{\alpha}$ é $100(1 - \alpha)$ percentil da distribuição de perda. Desta forma:
+
+$$VaR_{\alpha} = \inf\{x; F(x) \geq (1 - \alpha)\} = F^{-1}(1 - \alpha) = -\frac{1}{r}\log(\alpha)$$.
+
 |    1.3. *Give a formula for the expected loss given that the loss is larger than* $VaR_{\alpha}$.
+
+### Resposta:
+
+\begin{align}
+\mathbb{E}[L | L > -\frac{1}{r}\log(\alpha)] &= \int_{-\infty}^{\infty} xf_{L|L > VaR_{\alpha}}(x)dx \\
+                                             &= \int_{-\infty}^{\infty} xf_{L}(x - VaR_{\alpha})dx \\
+                                             &= \int_{-\infty}^{\infty} (u + VaR_{\alpha})f_L(u)du \\
+                                             &= \mathbb{E}[L] + VaR_{\alpha} = \frac{1}{r}[1 - \log(\alpha)]
+\end{align}
+
+A segunda igualdade é válida, pois a distribuição exponencial apenas foi deslocada em $VaR_{\alpha}$, inalterando o formato da curva em si. Essa propriedade é conhecida por *memoryless*. 
 
 2. *For this question, we assume that the loss distribution is the standard Pareto distribution with shape parameter* $\xi$, *location parameter* $m = 0$ *and scale parameter* $\lambda = 1$. 
 
 |    2.1. *Give a formula for the c.d.f. of* $L$. *Explain.*
+
+### Resposta: 
+
+Como já destacado anteriormente: 
+
+$$ F_L(x) = \begin{cases}
+1 - (1 + \xi x)^{-\frac{1}{\xi}}, \xi \neq 0 \\
+1 - \exp(-x), \xi = 0
+\end{cases}$$
+
 |    2.2. *Derive a formula for* $VaR_{\alpha}$.
+
+### Resposta: 
+
+Utilizando a função quantile da Distribuição de Pareto encontrada no exercício anterior:
+
+$$VaR_{\alpha} = \inf\{x; F_L(x) \geq (1 - \alpha)\} = F^{-1}(1 - \alpha) = \frac{1}{\xi}(\alpha^{-\xi} - 1)$$
+
 |    2.3. *Give a formula for the expected loss given that the loss is larger than* $VaR_{\alpha}$.
+
+### Resposta:
+
+\begin{align}
+\mathbb{E}[L | L > VaR_{\alpha}] &= \int_{0}^{\infty} xf_{L|L > VaR_{\alpha}}(x)dx \\
+                                 &= \int_{VaR_{\alpha}}^{\infty} xf_L(x)\cdot \frac{1}{\mathbb{P}[L > VaR_{\alpha}]}dx \\ 
+                                 &= \frac{1}{\alpha}\cdot[VaR_{\alpha}\cdot\alpha - \int_{VaR_{\alpha}}^{\infty} (1 - F_L(x)) dx] \\
+                                 &= \frac{1}{\alpha}\cdot[VaR_{\alpha}\cdot\alpha - (1 + \xi VaR_{\alpha})^{1 - \frac{1}{\xi}}\cdot\frac{1}{\xi - 1}] \\
+                                 &= VaR_{\alpha} - (1 + \xi VaR_{\alpha})\cdot\frac{1}{\xi - 1} \\
+                                 &= \frac{VaR_{\alpha} + 1}{1 - \xi}\\
+                                 &= \frac{1 - \xi - \alpha^{-\xi}}{\xi(\xi - 1)}
+\end{align}
 
 3. *The expected short fall (also known as the conditional VaR) at the level $\alpha$ is the expected loss conditioned by the fact that the loss is greater than or equal to* $VaR_{\alpha}$. *The goal of this question is to quantify the differences obtained when using it as a measure of risk in the two loss models considered in questions 1 and 2.*
 
 |    3.1. *For each* $\alpha \in (0, 1)$, *derive an equation that the rate parameter* $r$ *and the shape parameter* $\xi$ *must satisfy in order for the values of* $VaR_{\alpha}$ *computed in questions 1.2 and 2.2 to be the same.* 
 
+### Resposta: 
+
+Queremos que $\frac{\alpha^{\xi} - 1}{\xi} = -\frac{\log(\alpha)}{r} \implies r = \xi \frac{\log(\alpha)}{1 - \alpha^{-\xi}}$. De fato, para cada  $\alpha \in (0, 1)$, essa é uma equação que, para cada $\xi$, $r$ deve satisfazer, e vice-versa. 
+
 |    3.2. *Assuming that the parameters* $r$ *and* $\xi$ *satisfy the relationship derived in question 3.1 above, compare the corresponding values of the expected short fall in the models of questions 1 and 2 and comment on the differences.*
 
+### Resposta: 
+
+Suponha que $r$ satisfaça a equação acima. Então, no caso da questão 1, se definirmos $E_1$ como o "expected short fall", $E_1 = \frac{1}{r}[1 - \log(\alpha)]=  \frac{1 - \alpha^{-\xi}}{\xi \log(\alpha)}[1 - \log(\alpha)]$. Da mesma forma $E_2 = \frac{1 - \xi - \alpha^{-\xi}}{\xi(\xi - 1)}$. No primeiro caso, teremos uma componente que cresce menos com com $\alpha$, isto é, se $\alpha$ crescer, o $E_1$ vai decrecer mais do que $E_2$. Observo tamvém que as expressões são bem diferentes, sendo a segunda linear em $\alpha^{-\xi}$. Além disso, considere o gráfico: 
+
+```{r}
+E1 <- function(a, xi) {return((1 - log(a))*(1 - a**(-xi))/(xi*log(a)))}
+E2 <- function(a, xi) {return((1 - xi - a**(-xi))/(xi*(xi - 1)))}
+a <- seq(from = 0.001, to = 0.999, by = 0.001)
+plot(a, E1(a, 0.5), type = 'l', main = "Comparing E1 and E2", ylab = "Expected", col = "blue", xlab = "alpha")
+points(a, E2(a, 0.5), type = 'l', col = "red")
+```
+
 # Problema 2.4
+
+*This problem attempts to quantify the goodness of fit resulting from our GPD analysis of samples with heavy tails.*
+
+1. *Use the method described in the text to fit a GPD to the PCS index, and generate a Monte Carlo random sample from the fitted distribution five times the size of the original data sample.*
+
+2. *Produce a Q-Q plot to compare graphically the two samples and comment.*
+
+3. *Use a two-sample Kolmogorov-Smirnov goodness-of-fit test to quantify the qualitative results of the previous question. NB: Such a test is performed in R with the command ks.test. Check the help files for details on its use and the returned values.*
+
+4. *Same questions as above for the weekly log-returns on the S&P data.*
 
 # Problema 2.6
 
