@@ -1,0 +1,88 @@
+---
+title: "Finanças Quantitativas: Lista 3"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+date: "03 de maio de 2020"
+output: pdf_document
+---
+
+# Exercise 1
+
+## Exercise 3.11 (Carmona)
+
+## Exercise 3.12 (Carmona)
+
+# Exercise 2 
+
+*Let* $X = (X_1, X_2) \sim N_d(\mu, \Sigma)$, *where* $X_1 = (X_{1,1}, ..., X_{1,p}), X_2 = (X_{2,1}, ..., X_{2,q}), d = p + q$. *Show that*
+
+|   a. $X_1 \sim N_p(\mu_1, \Sigma_{1,1})$.
+
+\textbf{Resposta:}
+
+Tenho que provar que $\forall (l_1, l_2, ..., l_p) \in \mathbb{R}^p, \xi = l_1X_{1,1} + ... + l_pX_{1,p}$ é Gaussiano. Suponha que não e que $(a_1, ...., a_p) \in \mathbb{R}^{p}$ seja tal que $a_1X_{1,1} + ... + a_pX_{1,p}$ não tem distribuição normal. Nesse caso, considere o vetor $d-dimensional~(a_1, ..., a_p, 0, 0, ...,0)$. Temos que, pela definição de Distribuição Normal Multivariada, $X_1$ tem distribuição normal e $a_1X_{1,1} + ... + a_pX_{1,p} + 0X_{2,1} + ... + 0X_{2,p}$ tem distribuição normal, o que é um absurdo. Desta forma, provamos por contradição que $X_1 \sim N_p(m, sd)$.
+
+Sabemos que $m = (E[X_{1,1}], ..., E[X_{1,p}])$ e que $sd_{i,j} = Cov(X_{1,i}, X_{1,j})$. Sabemos, entretanto, que $m = \mu_1$, pois $E[X_1] = (E[X_{1,1}], ..., E[X_{1,p}]) = \mu_1$. Também sabemos que $sd_{i,j} = \Sigma_{1,1}(i,j)$, pois as definições são as mesmas quando $1 \leq i, j \leq p$. 
+
+Concluimos, então,  que $X_1 \sim N_p(\mu_1, \Sigma_{1,1})$.
+
+|   b. $X_1|X_2 = x_2 \sim N_p(\mu_{1|2}, \Sigma_{1|2})$, *where* $\mu_{1|2} = \mu_1 + \Sigma_{1,2}\Sigma_{2,2}^{-1}(x_2 - \mu_2)$ e $\Sigma_{1|2} = \Sigma_{1,1} - \Sigma_{1,2}\Sigma_{2,2}^{-1}\Sigma_{2,1}$. 
+
+\textbf{Resposta:}
+
+Suponha que $\Sigma$ é uma matriz invertível, considere $C = \Sigma_{1,2}\Sigma_{2,2}^{-1}$. Também considere as transformações $Y_1 = X_1 - CX_2$ e $Y_2 = X_2$. Dessa forma, teremos que $Y_1$ e $Y_2$ terão distribuição conjunta normal e matriz de covariância diagonal, que implica que elas serão independentes. Isso ajudará nas contas. Assim, primeiro vejamos que a distribuição conjunta é uma normal: 
+
+\begin{equation}
+\label{Yconj}
+\begin{split}
+\begin{pmatrix} Y_1 \\ Y_2 \end{pmatrix} &= \begin{pmatrix} I & -C \\ 0 & I \end{pmatrix}\begin{pmatrix}X_1 \\ X_2\end{pmatrix}, ~ pela~definicao \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} I & -C \\ 0 & I \end{pmatrix} \begin{pmatrix} \Sigma_{1,1} & \Sigma_{1,2} \\ \Sigma_{2,1} & \Sigma_{2,2} \end{pmatrix}\begin{pmatrix} I & 0 \\ -C^T & I \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - C\Sigma_{2,1} & \Sigma_{1,2} - C\Sigma_{2,2} \\ \Sigma_{2,1} & \Sigma_{2,2} \end{pmatrix}\begin{pmatrix} I & 0 \\ -C^T & I \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - C\Sigma_{2,1} - \Sigma_{1,2}C^T +  C\Sigma_{2,2}C^T & \Sigma_{1,2} - C\Sigma_{2,2} \\ \Sigma_{2,1} - \Sigma_{2,2}C^T & \Sigma_{2,2} \end{pmatrix}\right) \\
+\end{split}
+\end{equation}
+
+Desta forma, $Y_1$ e $Y_2$ tem distrivuição conjunta, com média e matriz de variância especificada em \ref{Yconj}. Sabemos que $\Sigma$ é uma matriz onde $\Sigma_{1,2} = \Sigma{2,1}^T$, visto quo que $Cov(X_{1,i}, X_{2,j}) = Cov(X_{2,j}, X_{1,i})$. Também sabemos que $\Sigma_{i,i} = \Sigma_{i,i}^T, i = 1, 2$, isto é, é simétrica, pelo mesmo motivo. Desta forma: 
+
+\begin{equation}
+\label{Yind}
+\begin{split}
+\begin{pmatrix} Y_1 \\ Y_2 \end{pmatrix} &\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - C\Sigma_{2,1} - \Sigma_{1,2}C^T +  C\Sigma_{2,2}C^T & \Sigma_{1,2} - C\Sigma_{2,2} \\ \Sigma_{2,1} - \Sigma_{2,2}C^T & \Sigma_{2,2} \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \right. \\ &\left. \begin{pmatrix} \Sigma_{1,1} - (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,1} - \Sigma_{1,2}(\Sigma_{1,2}\Sigma_{2,2}^{-1})^T +  (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,2}(\Sigma_{1,2}\Sigma_{2,2}^{-1})^T & \Sigma_{1,2} - (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,2} \\ \Sigma_{2,1} - \Sigma_{2,2}(\Sigma_{1,2}\Sigma_{2,2}^{-1})^T & \Sigma_{2,2} \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,1} - \left[\Sigma_{1,2} +  \Sigma_{1,2}(\Sigma_{2,2}^{-1}\Sigma_{2,2})\right]
+(\Sigma_{1,2}\Sigma_{2,2}^{-1})^T & \Sigma_{1,2} - \Sigma_{1,2}(\Sigma_{2,2}^{-1}\Sigma_{2,2}) \\ \Sigma_{2,1} - (\Sigma_{2,2}^T(\Sigma_{2,2}^{-1})^T)\Sigma_{1,2}^T & \Sigma_{2,2} \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,1} - \left[\Sigma_{1,2} +  \Sigma_{1,2}(\Sigma_{2,2}^{-1}\Sigma_{2,2})\right] (\Sigma_{1,2}\Sigma_{2,2}^{-1})^T & \Sigma_{1,2} - \Sigma_{1,2}(\Sigma_{2,2}^{-1}\Sigma_{2,2}) \\ \Sigma_{2,1} - (\Sigma_{2,2}^T(\Sigma_{2,2}^{-1})^T)\Sigma_{1,2}^T & \Sigma_{2,2} \end{pmatrix}\right) \\
+&\sim N_d\left(\begin{pmatrix}\mu_1 - C\mu_2 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} \Sigma_{1,1} - (\Sigma_{1,2}\Sigma_{2,2}^{-1})\Sigma_{2,1} & 0 \\ 0 & \Sigma_{2,2} \end{pmatrix}\right)
+\end{split}
+\end{equation}
+
+Com isso, provamos que $Y_1$ e $Y_2$ são independentes, isto é $X_1 - CX_2$ é independente de $X_2$. Isso é interessante, porque a distribuição condicional de $Y_1|Y_2 = y_2$, isto é $X_1 - CX_2|X_2 = x_2$ tem a mesma distribuição de $X_1 - Cx_2$. Mas pelos cálculos em \ref{Yind} e o resultado obtido na primeira questão, inferimos que $X_1 - CX_2 \sim N_p(\mu_1 - C\mu_2, \Sigma_{1,1} - C\Sigma_{2,1} )$. 
+
+Concluimos que:
+
+\begin{equation}
+\begin{split}
+X_1|X_2 = x_2 &\sim N_p(\mu_1 - C\mu_2 + Cx_2, \Sigma_{1,1} - C\Sigma_{2,1}) \\
+&\sim N_p(\mu_1 + \Sigma_{1,2}\Sigma_{2,2}^{-1}(x_2 - \mu_2), \Sigma_{1,1} - \Sigma_{1,2}\Sigma_{2,2}^{-1}\Sigma_{2,1})
+\end{split}
+\end{equation}
+
+como queríamos provar.
+
+# Exercise 3 
+
+*Let* $X \sim Exp(r), ~i.e~ f_X(x) = re^{-rx}~for~x > 0~and~Y \sim Pareto(\alpha), i.e., f_Y(y) = \left(1 + \frac{y}{\alpha}\right)^{-(1 + \alpha)}, ~for~y > 0$. *Couple these two random variables with Gumpel copula with parameter* $\theta$: 
+
+$$C_{G_u}(u,v | \theta) = exp\{-((-\ln u)^{\theta} + (-\ln v)^{\theta})^{1/\theta}, 1 \leq \theta$$
+
+|    a. *Derive the joint cdf of* $X_1$ *and* $X_2$. 
+
+\textbf{Resposta:}
+
+|    b. *What happens to the dependence structure when* $\theta = 1$? *And when* $\theta \to \infty$. 
+
+\textbf{Resposta:}
+
+|    c. *Generate data from the joint distribution of* $X_1$ *and* $X_2$. 
+
+\textbf{Resposta:}
