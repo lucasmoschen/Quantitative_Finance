@@ -73,16 +73,104 @@ como queríamos provar.
 
 *Let* $X \sim Exp(r), ~i.e~ f_X(x) = re^{-rx}~for~x > 0~and~Y \sim Pareto(\alpha), i.e., f_Y(y) = \left(1 + \frac{y}{\alpha}\right)^{-(1 + \alpha)}, ~for~y > 0$. *Couple these two random variables with Gumpel copula with parameter* $\theta$: 
 
-$$C_{G_u}(u,v | \theta) = exp\{-((-\ln u)^{\theta} + (-\ln v)^{\theta})^{1/\theta}, 1 \leq \theta$$
+$$C_{G_u}(u,v | \theta) = exp\{-((-\ln u)^{\theta} + (-\ln v)^{\theta})^{1/\theta}\}, 1 \leq \theta$$
 
-|    a. *Derive the joint cdf of* $X_1$ *and* $X_2$. 
+|    a. *Derive the joint cdf of* $X$ *and* $Y$. 
 
 \textbf{Resposta:}
+
+Pelo Teorema de Sklar's, como $F_X$ e $F_Y$ são distribuições univariadas, temos que $F_{X,Y}$ é dada pela expressão:
+
+\begin{equation}
+\begin{split}
+F_{X,Y}(x,y\mid \theta) &= C(F_X(x), F_Y(y)\mid\theta) \\
+&= exp\{-[(-\ln F_X(x))^{\theta} + (-\ln F_Y(y))^{\theta}]^{1/\theta}\} \\
+&= exp\left\{-\left[(-\ln (1 - e^{-rx}))^{\theta} + \left(-\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right)^{\theta}\right]^{1/\theta}\right\} \\
+\end{split}
+\end{equation}
 
 |    b. *What happens to the dependence structure when* $\theta = 1$? *And when* $\theta \to \infty$. 
 
 \textbf{Resposta:}
 
+Se $\theta = 1$, observamos que $F_{X,Y}(x,y\mid\theta = 1)$:
+
+\begin{equation}
+\begin{split}
+F_{X,Y}(x,y) &= exp\left\{-\left[(-\ln (1 - e^{-rx})) + \left(-\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right)\right]\right\} \\
+&= exp\left\{\ln (1 - e^{-rx})\right\}exp\left\{\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right\} \\
+&= (1 - e^{-rx})\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right) \\
+&= F_X(x)F_Y(y)
+\end{split} 
+\end{equation}
+
+Como isso ocorre independente de $x$ e $y$, temos que as variáveis são independentes, isto é, a estrutura de dependência é inexistente. No próximo caso, observaremos um contraponto a esse fato. 
+
+Se $\theta \to \infty$, observamos que tanto $-\ln F_X(x)$ quanto $-\ln F_Y(y)$ são sempre positivos, visto que a distribuição cumulativa tem imagem em $[0,1]$. Dessa forma, podemos aplicar o conhecimento de que $\lim_{\theta \to \infty} ||x||_p = ||x||_{\infty}$. Também utilizo que a função logaritmo é crescente, logo, se em um dado ponto, o logaritmo de uma função é menor do que o logaritmo de outra, então esse ponto será menor também. Desta forma: 
+
+$$
+\begin{split}
+\lim_{\theta\to\infty} F_{X,Y}(x,y) &= \lim_{\theta\to\infty} exp\left\{-\left[(-\ln (1 - e^{-rx}))^{\theta} + \left(-\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right)^{\theta}\right]^{1/\theta}\right\} \\
+&= exp\left\{-\lim_{\theta\to\infty} \left[(-\ln (1 - e^{-rx}))^{\theta} + \left(-\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right)^{\theta}\right]^{1/\theta} \right\} \\
+&= exp\left\{-\max\left[(-\ln (1 - e^{-rx})), \left(-\ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right)\right]\right\} \\
+&= exp\left\{\min\left[\ln (1 - e^{-rx}), \ln\left(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right)\right]\right\} \\
+&= exp\left\{\ln(\min\left[1 - e^{-rx}, 1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right])\right\} \\
+&= \min\left[1 - e^{-rx}, 1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha}\right] \\
+&> (1 - e^{-rx})(1 - \left(1 + \frac{y}{\alpha}\right)^{-\alpha})
+\end{split} 
+$$
+
+A última desigualdade acontece porque nenhuma distribuição atinge os valores extremos do intervalo $[0,1]$, desta forma, o menor desses valores multiplicado por o maior que é menor do que um obtém um resultado menos. Desta forma, concluímos que $F_{X,Y}(x,y) \neq F_X(x)F_Y(y)$ e as variáveis \textbf{não} são independentes, pela definição de independência. Além do mais, a dependência é conectada com a comparação dos valores das duas ditribuições em cada ponto, isto é, se em uma parte da curva uma distribuição for mais que a outra, a distribuição conjunta será a menor.  
+
+Desta maneira, concluímos que no primeiro caso há independência, enquanto no segundo, não há independência. 
+
 |    c. *Generate data from the joint distribution of* $X_1$ *and* $X_2$. 
 
 \textbf{Resposta:}
+
+Primeiro, vamos importar a biblioteca e considerar o caso onde $\theta = 1$, para observar o comportamento da independência.
+
+```{r message = FALSE}
+library(copula)
+if(require(actuar)==0){
+  install.packages("actuar")
+}
+library(actuar)
+
+theta = 1
+C_gumbel = gumbelCopula(param = theta)
+
+par(mar=c(2,4,1,2), mfrow=c(1,2))
+persp(C_gumbel, dCopula, main ="Density", lwd=1)
+contour(C_gumbel, dCopula, xlim = c(0, 1), ylim=c(0, 1), main = "Contour plot")
+```
+
+Agora, vamos gerar os dados: 
+
+```{r message=FALSE}
+r = 1
+alpha = 1
+multivariate_dist = mvdc(copula = C_gumbel,
+                         margins = c("exp", "pareto"),
+                         paramMargins = list(list(rate = r),
+                                        list(shape = alpha, scale = 1)))
+gen_data = rMvdc(n = 1000, mvdc = multivariate_dist)
+
+theta = 5
+C_gumbel2 = gumbelCopula(param = theta)
+r = 1.5
+alpha = 3 
+multivariate_dist2 = mvdc(copula = C_gumbel2,
+                         margins = c("exp", "pareto"),
+                         paramMargins = list(list(rate = r),
+                                        list(shape = alpha, scale = 1)))
+gen_data2 = rMvdc(n = 1000, mvdc = multivariate_dist2)
+
+plot(gen_data[,1], gen_data[,2], xlab = "X ~ Exp(r)", ylab = "Y ~ Pareto(a)",
+     main = "Dados gerados pela distribuição conjunta", col = "green")
+points(gen_data2[,1], gen_data2[,2], col = "blue")
+legend("topright", legend = c("r = a = theta = 1", "r = 1.5, a = 3, theta = 5"), 
+       fill = c("green", "blue"), cex = 0.8)
+
+```
+
