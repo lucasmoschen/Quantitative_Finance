@@ -10,7 +10,30 @@ output: pdf_document
 
 ## Exercise 3.11 (Carmona)
 
+*Let us assume that* $X \sim N(0,1)$ *and let us define the random variable* $Y$ *by:*
+$$
+Y = \frac{1}{\sqrt{1 - 2/\pi}}(\mid X\mid - \sqrt{2/\pi})
+$$
+
+1. $Compute~\mathbb{E}\{|X|\}$
+
+\textbf{Resposta:}
+
+2. $Show~that~Y~has~mean~zero, ~variance~1,~and~that~it~is~uncorrelated~with~X$. 
+
+\textbf{Resposta:}
+
 ## Exercise 3.12 (Carmona)
+
+*Let X and Y be continuous random variables with cdfs* $F_X$ *and* $F_Y$ *respectively, and with copula C. For each real number t, prove the following two equalities:*
+
+1. $\mathbb{P}\{\max(X,Y) \leq t\} = C(F_X(t), F_Y(t))$
+
+\textbf{Resposta:}
+
+2. $\mathbb{P}\{\min(X,Y) \leq t\} = F_X(t) + F_Y(t) - C(F_X(t), F_Y(t))$
+
+\textbf{Resposta:}
 
 # Exercise 2 
 
