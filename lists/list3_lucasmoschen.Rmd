@@ -19,9 +19,49 @@ $$
 
 \textbf{Resposta:}
 
+Calculemos através da integral o valor esperado e considere $\phi(x)$ a função densidade da distribuição normal padrão.:
+
+$$
+\begin{split}
+\mathbb{E}(|X|) &=  \int_{-\infty}^{\infty} |x|\phi(x)dx \\
+&= \int_{-\infty}^{0} -x\phi(x)dx + \int_{0}^{\infty} x\phi(x)dx,~make~y = -x \\ 
+&= \int_{0}^{\infty} y\phi(y)dy + \int_{0}^{\infty} x\phi(x)dx \\
+&= 2\int_{0}^{\infty} x\phi(x)dx \\ 
+&= 2\frac{1}{\sqrt{2\pi}}\int_0^{\infty} xe^{\frac{-x^2}{2}}dx, ~make~\frac{x^2}{2} = y\\
+&= 2\frac{1}{\sqrt{2\pi}}\int_0^{\infty} e^{-y}dx \\
+&= \sqrt{\frac{2}{\pi}}
+\end{split}
+$$
 2. $Show~that~Y~has~mean~zero, ~variance~1,~and~that~it~is~uncorrelated~with~X$. 
 
 \textbf{Resposta:}
+
+Vejamos que $\mathbb{E}(Y) = \frac{1}{\sqrt{1 - 1/\pi}}(\mathbb{E}(|X|) - \sqrt{\frac{2}{\pi}}) = 0$. A primeira igualdade se deve a linearidade do valor esperado, enquanto a segunda igualdade se deve ao valor esperado calculado no item a. 
+
+Vamos calcular $E[Y^2]$. Temos, então:
+
+$$
+\begin{split}
+\mathbb{E}[Y^2] &= \frac{1}{1 - 2/\pi}(\mathbb{E}[X^2] - 2/\pi), ~linearidade~de~\mathbb{E}(\dot{}) \\
+&= \frac{1}{1 - 2/\pi}(Var[X] + (\mathbb{E}[X])^2- 2/\pi) \\
+&= \frac{1}{1 - 2/\pi}(1 - 2/\pi) = 1 \\
+\end{split}
+$$
+
+Logo $Var[Y] = E[Y^2] - (E[Y])^2 = 1$. 
+
+Por fim, calcularemos a covariância entre as variáveis: 
+
+$$
+\begin{split}
+Cov(X,Y) &= \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] = \mathbb{E}[XY] \\
+&= \frac{1}{\sqrt{1 - 2/\pi}}\mathbb{E}(X|X|) - \sqrt{2/\pi}\mathbb{E}(X) \\
+&= \frac{1}{\sqrt{1 - 2/\pi}}\left(\int_0^{\infty} x^2\phi(x)dx + \int_{-\infty}^0 (-x^2)\phi(x)dx\right),~make~y = -x \\
+&= \frac{1}{\sqrt{1 - 2/\pi}}\left(\int_0^{\infty} x^2\phi(x)dx + \int_{0}^{\infty} (-y^2)\phi(y)dy\right) = 0\\
+\end{split}
+$$
+
+Assim, mostramos que $\mathbb{E}[Y] = 1, Var[Y] = 0$ e $Cov(X,Y) = 0$. 
 
 ## Exercise 3.12 (Carmona)
 
