@@ -57,7 +57,7 @@ $$
 Cov(X,Y) &= \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] = \mathbb{E}[XY] \\
 &= \frac{1}{\sqrt{1 - 2/\pi}}\mathbb{E}(X|X|) - \sqrt{2/\pi}\mathbb{E}(X) \\
 &= \frac{1}{\sqrt{1 - 2/\pi}}\left(\int_0^{\infty} x^2\phi(x)dx + \int_{-\infty}^0 (-x^2)\phi(x)dx\right),~make~y = -x \\
-&= \frac{1}{\sqrt{1 - 2/\pi}}\left(\int_0^{\infty} x^2\phi(x)dx + \int_{0}^{\infty} (-y^2)\phi(y)dy\right) = 0\\
+&= \frac{1}{\sqrt{1 - 2/\pi}}\left(\int_0^{\infty} x^2\phi(x)dx + \int_{0}^{\infty} (-y^2)\phi(y)dy\right) = 0
 \end{split}
 $$
 
@@ -71,9 +71,35 @@ Assim, mostramos que $\mathbb{E}[Y] = 1, Var[Y] = 0$ e $Cov(X,Y) = 0$.
 
 \textbf{Resposta:}
 
+Seja $F_{X,Y}(x,y)$ a distribuição conjunta dessas variáveis. Pelo Teorema de Sklar's, temos que $F_{X,Y}(x,y) = C(F_X(x), F_Y(y))$. Além do mais, esta cópula é única, pois as variáveis são contínuas. Desta forma:
+
+$$
+F_{X,Y}(t,t) = \mathbb{P}[X \leq t, Y \leq t] = \mathbb{P}[\max(X,Y) \leq t]
+$$
+$$
+F_{X,Y}(t,t) = C\left(F_X(t), F_Y(t)\right)
+$$
+Logo, temos que $\mathbb{P}\{\max(X,Y) \leq t\} = C(F_X(t), F_Y(t))$
+
 2. $\mathbb{P}\{\min(X,Y) \leq t\} = F_X(t) + F_Y(t) - C(F_X(t), F_Y(t))$
 
 \textbf{Resposta:}
+
+Utilizando o teorema acima citado, podemos calcular: 
+
+\begin{equation}
+\begin{split}
+\mathbb{P}\{\min(X,Y) \leq t\} &= 1 - \mathbb{P}\{\min(X,Y) \geq t\} \\
+&= 1 - \mathbb{P}\{X \geq t, Y \geq t\} \\
+&= 1 - (1 - \mathbb{P}\{X \leq t, Y\leq t\} - \mathbb{P}\{X \leq t, Y\geq t\} - \mathbb{P}\{X \geq t, Y\leq t\}) \\
+&= \mathbb{P}\{X \leq t, Y\leq t\} + \mathbb{P}\{X \leq t, Y\geq t\} + \mathbb{P}\{X \geq t, Y\leq t\} \\
+&= \mathbb{P}\{X \leq t, Y \in \mathbb{R}\} + \mathbb{P}\{X \geq t, Y\leq t\} + \mathbb{P}\{X \leq t, Y\leq t\} - \mathbb{P}\{X \leq t, Y\leq t\} \\
+&= \mathbb{P}\{X \leq t, Y \in \mathbb{R}\} + \mathbb{P}\{X \in \mathbb{R}, Y\leq t\}  - \mathbb{P}\{X \leq t, Y\leq t\} \\
+&= F_X(x) + F_Y(y) - C(F_X(t), F_Y(t)) 
+\end{split}
+\end{equation}
+
+como queríamos mostrar. 
 
 # Exercise 2 
 
@@ -221,8 +247,8 @@ gen_data = rMvdc(n = 1000, mvdc = multivariate_dist)
 
 theta = 5
 C_gumbel2 = gumbelCopula(param = theta)
-r = 1.5
-alpha = 3 
+r = 3
+alpha = 1.5 
 multivariate_dist2 = mvdc(copula = C_gumbel2,
                          margins = c("exp", "pareto"),
                          paramMargins = list(list(rate = r),
@@ -232,7 +258,7 @@ gen_data2 = rMvdc(n = 1000, mvdc = multivariate_dist2)
 plot(gen_data[,1], gen_data[,2], xlab = "X ~ Exp(r)", ylab = "Y ~ Pareto(a)",
      main = "Dados gerados pela distribuição conjunta", col = "green")
 points(gen_data2[,1], gen_data2[,2], col = "blue")
-legend("topright", legend = c("r = a = theta = 1", "r = 1.5, a = 3, theta = 5"), 
+legend("topright", legend = c("r = a = theta = 1", "r = 3, a = 1.5, theta = 5"), 
        fill = c("green", "blue"), cex = 0.8)
 
 ```
