@@ -327,7 +327,7 @@ diff_yield <- diff(as.matrix(diff_yield))
 timelabels <- c(2002,2005,2008,2011,2014,2016)
 X = colnames(diff_yield)
 matplot(y = diff_yield, 
-        typ="l", lty = 1, xlab = "Days", ylab = "Yield", xaxt = "n",
+        typ="l", lty = 1, xlab = "Days", ylab = "Diff yield", xaxt = "n",
         main = "ETTB - Mudanças Diárias")
 axis(1, at = c(0, 650, 1300, 1950,2600,3250), labels = timelabels)
 legend("topright", legend = X, lwd = 2, col=1:length(X), cex=0.6)
