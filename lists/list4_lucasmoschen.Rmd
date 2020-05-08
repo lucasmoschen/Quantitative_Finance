@@ -41,6 +41,8 @@ $$
 \end{split}
 $$
 
+\pagebreak 
+
 ## Problema 3.18
 
 1. $\log X \sim N(0, 1)$ e $\log X \sim N(0, \sigma^2)$. Além, $(\log X, \log Y)$ são juntamente Gaussianas. Compute a denside de $X$ quando $\log X \sim N(\mu, \sigma^2)$
@@ -113,6 +115,8 @@ Isso ocorre porque $e^{\sigma^2 - 2\sigma} \to \infty$, logo o denominador é il
 
 Concluo que $\lim_{\sigma\to\infty} \rho_{\min} = \lim_{\sigma\to\infty} \rho_{\max} = 0$.
 
+\pagebreak
+
 ## Problema 3.24
 
 1. 
@@ -152,9 +156,9 @@ plot(rho, correlation$Spearman, main = "Spearman Correlation",
 points(x = rho, y =  rho, type= 'l', col = "grey")
 ```
 
-Observamos que os gráficos de Pearson e Spearman, a correlação das variáveis comparado com a correlação do parâmetro da cópula Gaussiana está em cima da reta $y = x$. Dessa maneira, podemos, pelo menos visualmente, ver que o parâmetro da cópula é exatamente a correlação das variáveis gaussianas que estamos modelando. Isso nos dá uma interpretação bem clara do que é esse parâmetro quando estamos calculando amostras aleatórias.
+Observamos que nos gráficos de Pearson e Spearman, a correlação das variáveis comparada com a correlação do parâmetro da cópula Gaussiana está em cima da reta $y = x$. Dessa maneira, podemos, pelo menos visualmente, ver que o parâmetro da cópula é exatamente a correlação das variáveis que estamos modelando. Isso nos dá uma interpretação bem clara do que é esse parâmetro ao fazer amostras aleatórias.
 
-No caso da correlação de Kendall, vemos que o gráfico fica um pouco a baixo da reta $y = x$, significando que ela é menor do que a correlação de pearson para esses valores. Isso faz sentido por que a contribuição para uma mudança de sinal é equivalente sempre, enquanto na de Pearson, ela é Ponderada por seu tamanho.
+No caso da correlação de Kendall, vemos que o gráfico fica um pouco a baixo da reta $y = x$, significando que ela é menor do que a correlação de Pearson para esses valores. Isso faz sentido por que a contribuição para uma mudança de sinal é equivalente sempre, enquanto na de Pearson, ela é Ponderada por seu tamanho.
 
 ```{r message = FALSE}
 # Exercise 1.5: Cauchy Distribution
@@ -186,7 +190,7 @@ plot(rho, correlation$Spearman, main = "Spearman Correlation",
 points(x = rho, y =  rho, type= 'l', col = "grey")
 ```
 
-A correlação de Pearson ficou extremamente diferente. Isso faz com que o parâmetro nã odeva ser interpretado como a correlação das variáveis, dado que a cauda das distribuições marginais é mais pesada. A correlação de Kendall manteve a propriedade, dado que, como comentado anteriormente, o que é considerado é apenas o sinal, não o tamanho da diferença. Por fim, a correlação de Spearman mostrou-se ainda ter a mesma interpretação. Isso ocorre, pois ela tem o objetivo de remover o tamanho relativo de $X$ e $Y$ e captura a correlação apenas com o que sobrou da dependência, que nesse caso é uma cópula normal, que como visto acima, tem a mesma interpretação para Pearson e Spearman. 
+A correlação de Pearson ficou extremamente diferente. Isso faz com que o parâmetro não deva ser interpretado como a correlação das variáveis, dado que a cauda das distribuições marginais é mais pesada. A correlação de Kendall manteve a propriedade, dado que, como comentado anteriormente, o que é considerado é apenas o sinal, não o tamanho da diferença. Por fim, a correlação de Spearman mostrou-se ainda ter a mesma interpretação. Isso ocorre, pois ela tem o objetivo de remover o tamanho relativo de $X$ e $Y$ e captura a correlação apenas com o que sobrou da dependência, que nesse caso é uma cópula normal, que como visto acima, tem a mesma interpretação para Pearson e Spearman. 
 
 2. 
 
@@ -262,14 +266,94 @@ abline(h = 0.8, col = "grey")
 
 Da mesma forma como falamos no primeiro exercício, a correlação de Pearson perde o padrão dada a diferença das caudas. Além disso, ela não segue nem o padrão de crescimento antes visto e perde a interpretabilidade. Já a correlação de Kendall e Spearman apresentam comportamento similar, já que procuram reduzir a influência do tamanho das variáveis em questão. 
 
+\pagebreak 
+
 ## Análise da ETTJ Brasileira
 
-Primeiro farei o import dos dados:
+Primeiro farei o import dos dados. Veja a curva de juros brasileira com as diferentes maturidades especificadas e como se comportou ao longo do tempo. 
 
-```{r}
+```{r message = FALSE}
 dir <- "/home/lucasmoschen/Documents/GitHub/Quantitative_Finance/data/"
 file <- "prices_Swap_PRE_DI.RData"
 load(file = paste(dir,file,sep=""))
+yield <- prices_Swap_PRE_DI[,c(1,3,5,6,7,8,9,10,11,2,4)]
+
+timelabels <- c(2002,2005,2008,2011,2014,2016)
+X = colnames(yield)[2:length(yield[1,])]
+matplot(y = yield[,2:length(yield[1,])], 
+        typ="l", lty = 1, xlab = "Days", ylab = "Yield", xaxt = "n",
+        main = "Estrutura da Taxa de Juros Brasileira")
+axis(1, at = c(0, 650, 1300, 1950,2600,3250), labels = timelabels)
+legend("topright", legend = X, lwd = 2, col=1:length(X), cex=0.6)
 ```
 
+Assim, podemos utilizar a função utilizada para o método PCA. Eu insiro logo abaixo o sumário das informações mais importantes do método.
+
+```{r}
+yield.pca = princomp(yield[,2:length(yield)])
+summary(yield.pca)
+
+plot(yield.pca,
+  main="Proporção da Variância explicada pelos componentes")
+```
+
+Como observamos no gráfico, os três primeiros componentes explicam mais de 99,9% da informação que carregamos nos dados. Assim, podemos reduzir a dimensionalidade de 10 para 3 e garantir que, segundo a norma quadrática, tenhamos apenas perdido 0,1% da informação. 
+
+Assim, vejamos as cargas dos componentes de 1 a 4 de nosso algorirmo.
+
+```{r}
+par(mar=c(2,4,1,2), mfrow=c(2,2))
+
+time <- c(1,2,3,4,6,12,24,36,48,60)
+
+plot(time,yield.pca$loadings[,1], type = "o", 
+     xlab = "months", ylab = "Loading 1", ylim = c(-0.5, 0.5))
+plot(time,yield.pca$loadings[,2],  type = "o", 
+     xlab = "months", ylab = "Loading 2")
+plot(time,yield.pca$loadings[,3],  type = "o", 
+     xlab = "months", ylab = "Loading 3")
+plot(time,yield.pca$loadings[,4], type = "o", 
+     xlab = "months", ylab = "Loading 4")
+```
+
+Temos que o primeiro autovetor é praticamente contante, logo ele representa a média das curvas dentre as maturidades. Claro que o valor em si é normalizado, para evitar problemas de variância. A segunda componente mede a tendência, a inclinação das curvas. Percebemos que ela dimminui com o aumento da maturação. O terceiro autovetor captura a curvatura da curva de juros. Percebemos que as curvas de médio prazo tem formato côncavo, por exemplo. Já do quarto componente em diante, não podemos inferir informação, já que elas carregam parte do ruído, pois como já discutido, representam pouco da informação da variância dos dados. 
+
+Podemos também fazer o mesmo processo para quando estamos trabalhando com a diferença diária da curva de juros, como o livro constrói na curva de SWAP. Observe que o gráfico reflete as grandes variações e fica bem complicado de entender o que de fato é relevante na informação.
+
+```{r message = FALSE}
+diff_yield <- prices_Swap_PRE_DI[,c(3,5,6,7,8,9,10,11,2,4)]
+diff_yield <- diff(as.matrix(diff_yield))
+
+timelabels <- c(2002,2005,2008,2011,2014,2016)
+X = colnames(diff_yield)
+matplot(y = diff_yield, 
+        typ="l", lty = 1, xlab = "Days", ylab = "Yield", xaxt = "n",
+        main = "ETTB - Mudanças Diárias")
+axis(1, at = c(0, 650, 1300, 1950,2600,3250), labels = timelabels)
+legend("topright", legend = X, lwd = 2, col=1:length(X), cex=0.6)
+```
+
+Aplicando novamente o algoritmo de PCA, obtemos o sumário das informações e a relação com relação a explicabilidade de cada componente para as diferentes maturidades. Podemos observar que as 5 primeiras componentes explicam mais de 90% da variância. Para além disso, as três primeiras componentes agora explicam quase 80% da informação contida. Também vejamos, logo abaixo o gráfico dos autovetores do método. A interpretação ficou um pouco diferente, pois a primeira componente não é mais uma reta.
+
+```{r fig1, fig.height = 4, fig.width = 8}
+diff_yield.pca = princomp(diff_yield)
+summary(diff_yield.pca)
+
+par(mar=c(2,4,2,2))
+plot(diff_yield.pca,
+  main="Proporção da Variância explicada pelos componentes")
+
+par(mar=c(2,4,1,2), mfrow=c(2,2))
+
+time <- c(1,2,3,4,6,12,24,36,48,60)
+
+plot(time,diff_yield.pca$loadings[,1], type = "o", 
+     xlab = "months", ylab = "Loading 1", ylim = c(-0.5, 0.5))
+plot(time,diff_yield.pca$loadings[,2],  type = "o", 
+     xlab = "months", ylab = "Loading 2")
+plot(time,diff_yield.pca$loadings[,3],  type = "o", 
+     xlab = "months", ylab = "Loading 3")
+plot(time,diff_yield.pca$loadings[,4], type = "o", 
+     xlab = "months", ylab = "Loading 4")
+```
 
