@@ -1,0 +1,139 @@
+---
+title: "Finanças Quantitativas: Lista 4"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+date: "08 de maio de 2020"
+output: pdf_document
+---
+
+## Problema 3.17
+
+1. Sejam $Z \sim N(0,1)$, $\sigma > 0$ e $f$ uma função. Então: 
+$$
+\begin{split}
+\mathbb{E}[f(Z)e^{\sigma Z}] &= \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}f(z)e^{\sigma z} e^{-\frac{z^2}{2}} dz \\
+&= \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}f(z) e^{-\frac{z^2}{2} + \sigma z} dz \\
+&= \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}f(z) e^{-\frac{1}{2}(z^2 - 2\sigma z + \sigma^2)}e^{\frac{1}{2}\sigma^2} dz \\
+&= \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}\sigma^2}\int_{-\infty}^{\infty}f(z) e^{-\frac{1}{2}(z - \sigma)^2} dz, ~~~x = z - \sigma, dx = dz  \\
+&= \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}\sigma^2}\int_{-\infty}^{\infty}f(x + \sigma) e^{-\frac{1}{2}x^2} dx \\
+&= e^{\frac{1}{2}\sigma^2}\mathbb{E}[f(Z + \sigma)] \\
+\end{split}
+$$
+Se $X \sim N(\mu, \sigma^2)$, temos que $X = \mu + \sigma Z$, onde $Z \sim N(0,1)$. Se tomarmos $f(Z) = e^{\mu}$ e $sigma > 0$ o desvio vadrão de $X$. Assim: 
+$$
+\begin{split}
+\mathbb{E}[e^X] &= \mathbb{E}[e^{\mu + \sigma Z}] \\
+&= \mathbb{E}[e^{\mu}e^{\sigma Z}], ~pelo~demonstrado \\
+&= e^{\frac{1}{2}\sigma^2}\mathbb{E}[f(Z + \sigma)] \\
+&= e^{\frac{1}{2}\sigma^2}\mathbb{E}[e^{\mu}] = e^{\mu + \sigma^2/2} \\
+\end{split}
+$$
+2. Assuma que $X$ e $Y$ são v.a. juntamente Gaussianas com média $0$ e $h$  uma função qualquer.
+
+Temos que $f_{XY}(x,y)=\frac{1}{2 \pi \sigma_X \sigma_Y \sqrt{1-\rho^2}} \exp \{-\frac{1}{2 (1-\rho^2)} \big[ \frac{x^2}{\sigma_X^2}-2\rho\frac{xy}{\sigma_X\sigma_Y} +\frac{y^2}{\sigma_Y^2} \big] \}$
+$$
+\begin{split}
+\mathbb{E}[e^Xh(Y)] &= \int_{\mathbb{R}^2} e^xh(y)f_{XY}(x,y)dydx \\
+&= \int_{\mathbb{R}} e^x\frac{1}{\sqrt{2\pi}\sigma_X}\exp\{-\frac{x^2}{2\sigma_X^2}\} \int_{\mathbb{R}} h(y)\frac{1}{\sqrt{2 \pi} \sigma_Y \sqrt{1-\rho^2}}\exp\{\frac{x^2}{2\sigma_X^2}\} \exp \{-\frac{1}{2 (1-\rho^2)} \big[ \frac{x^2}{\sigma_X^2}-2\rho\frac{xy}{\sigma_X\sigma_Y} +\frac{y^2}{\sigma_Y^2} \big] \} dy dx \\
+&= \int_{\mathbb{R}} e^x\frac{1}{\sqrt{2\pi}\sigma_X}\exp\{-\frac{x^2}{2\sigma_X^2}\} \int_{\mathbb{R}} h(y)\frac{1}{\sqrt{2 \pi} \sigma_Y \sqrt{1-\rho^2}}\exp\{ -\frac{1}{2 (1-\rho^2)} \big[\frac{x^2\rho^2}{\sigma_X^2} -2\rho\frac{xy}{\sigma_X\sigma_Y} +\frac{y^2}{\sigma_Y^2} \big] \} dy dx \\
+&= \int_{\mathbb{R}} e^x\frac{1}{\sqrt{2\pi}\sigma_X}\exp\{-\frac{x^2}{2\sigma_X^2}\} \int_{\mathbb{R}} h(y)\frac{1}{\sqrt{1-\rho^2}\sqrt{2 \pi} \sigma_Y }\exp\{ -\frac{1}{2 (1-\rho^2)} \left(\frac{y - \frac{x\rho\sigma_Y}{\sigma_X}}{\sigma_Y}\right)^2\} dy dx \\
+&= \mathbb{E}[e^X]\mathbb{E}[h(Y + cov(X,Y))] 
+\end{split}
+$$
+
+## Problema 3.18
+
+1. $\log X \sim N(0, 1)$ e $\log X \sim N(0, \sigma^2)$. Além, $(\log X, \log Y)$ são juntamente Gaussianas. Compute a denside de $X$ quando $\log X \sim N(\mu, \sigma^2)$
+
+Seja $Y = \log X$. Considere $g(y) = e^y$, então $g$ transforma a variável $Y$ na variável $X$. Desta forma, consigo calcular a densidade de $X$: 
+$$
+\begin{split}
+f_X(x) &= \frac{f_Y(y)}{g'(y)} = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y - \mu)^2}{\sigma^2}}\frac{1}{e^y} \\
+&= \frac{1}{\sqrt{2\pi}\sigma}\exp\{-\frac{(\log x - \mu)^2}{\sigma^2} - \log x\}
+\end{split}
+$$
+Temos, então, a densidade de $X$.
+
+2. $\rho_{\min} = (e^{-\sigma} - 1)/\sqrt{(e - 1)(e^{\sigma^2} - 1)}$
+
+Pelo descrito no exercício anterior, sabemos que: 
+
+$$E[X] = E[e^{\log X}] = e^{\mu + \sigma^2/2} = e^{1/2}$$
+$$E[Y] = e^{\sigma^2/2}$$
+$$E[X^2] = E[e^{2\log X}] = e^{2\mu + 2\sigma^2} = e^2$$
+$$E[Y^2] = e^{2\sigma^2}$$
+$$Var[X] = E[X^2] - E[X]^2 = e^2 - e$$
+$$Var[Y] = E[Y^2] - E[Y]^2 = e^{\sigma^2}(e^{\sigma^2} - 1)$$
+
+Podemos dizer que $X$ e $Y$ são contramonotônicas, pois $(X, Y) = (e^{\log X})(e^{-\log Y}) = (e^{\log X})(e^{-\sigma\log X})$, isto é, existe uma variável aleatória e duas funções, uma crescente e uma deecrescente, onde vale essa igualdade em distribuição. Logo, elas admitem o limite inferior Fréchet-Hoeffding na cópula, que no caso é de uma Gaussiana. Assim, o valor mínimo da correlação é atingido quando a cópula é minima, que ocorre quando as variáveis são contramonotônicas. 
+
+Agora, podemos calcular os valores desejados: 
+$$
+\begin{split}
+\rho_{\min} &= \min \frac{Cor(X,Y)}{\sigma_X\sigma_Y} 
+= \frac{Cov(e^{\log X}, e^{-\sigma\log X})}{\sigma_X\sigma_Y} \\
+&= \frac{E[e^{\log X - \sigma\log X}] - e^{1/2 + \sigma^2/2}}{\sqrt{e(e - 1)}\sqrt{e^{\sigma^2}(e^{\sigma^2} - 1)}} 
+= \frac{e^{(-\sigma + 1)^2/2} - e^{(\sigma^2 + 1)/2}}{e^{1/2 + \sigma^2/2}\sqrt{(e - 1)(e^{\sigma^2} - 1)}} \\
+&= \frac{e^{(-\sigma + 1)^2/2 - (\sigma^2 + 1)/2} - 1}{\sqrt{(e - 1)(e^{\sigma^2} - 1)}} 
+= \frac{e^{-\sigma} - 1}{\sqrt{(e - 1)(e^{\sigma^2} - 1)}}
+\end{split}
+$$
+Como queríamos mostrar. 
+
+3. $\rho_{\max} = (e^{\sigma} - 1)/\sqrt{(e - 1)(e^{\sigma^2} - 1)}$
+
+De forma equivalente, podemos dizer que $X$ e $Y$ são comonotônicas, porque $(X,Y) = (e^{\log X}, e^{\sigma \log X})$ e temos duas funções crescentes com uma variável em comum. Desta forma, elas admitem o limite superior de Fréchet-Hoeffding. DEsta forma, maximizamos a covariância no valor máximo que a cópula assume. Utilizamos as contas do exercício anterior (3.17) e, da mesma forma que fizemos em 2. dessa exercício, a correlação máxima acontece quando as variáveis são comonotônicas. Logo:
+$$
+\begin{split}
+\rho_{\max} &= \max \frac{Cor(X,Y)}{\sigma_X\sigma_Y} 
+= \frac{Cov(e^{\log X}, e^{\sigma\log X})}{\sigma_X\sigma_Y} \\
+&= \frac{E[e^{\log X + \sigma\log X}] - e^{1/2 + \sigma^2/2}}{\sqrt{e(e - 1)}\sqrt{e^{\sigma^2}(e^{\sigma^2} - 1)}} 
+= \frac{e^{(\sigma + 1)^2/2} - e^{(\sigma^2 + 1)/2}}{e^{1/2 + \sigma^2/2}\sqrt{(e - 1)(e^{\sigma^2} - 1)}} \\
+&= \frac{e^{(\sigma + 1)^2/2 - (\sigma^2 + 1)/2} - 1}{\sqrt{(e - 1)(e^{\sigma^2} - 1)}} 
+= \frac{e^{\sigma} - 1}{\sqrt{(e - 1)(e^{\sigma^2} - 1)}}
+\end{split}
+$$
+Como queríamos mostrar. 
+
+4. $\lim_{\sigma\to\infty} \rho_{\min} = \lim_{\sigma\to\infty} \rho_{\max} = 0$
+
+Como $\sigma > 0$, vemos que $\lim_{\sigma \to \infty} e^{-\sigma} = 0$, e que $e^{\sigma^2} \to \infty$. Dessa maneira, pelo denominador ser ilimitado e o numerador limitado, temos que, de fato, $\lim_{\sigma\to\infty} \rho_{\min} = 0$. 
+
+Para conferir que $\lim_{\sigma\to\infty} \rho_{\max} = 0$, vemos que:
+
+$$
+\begin{split}
+0 \leq \frac{e^{\sigma} - 1}{((e - 1)(e^{\sigma^2} - 1))^\frac{1}{2}} &\leq \frac{e^{\sigma}}{(e^{\sigma^2} - 1)^\frac{1}{2}}  \\
+&= \frac{1}{(e^{\sigma^2} - 1)^\frac{1}{2}/(e^{2\sigma})^{\frac{1}{2}}} \\
+&= \frac{1}{(e^{\sigma^2 - 2\sigma} - e^{-2\sigma})^\frac{1}{2}} \\
+&\to 0
+\end{split}
+$$
+Isso ocorre porque $e^{\sigma^2 - 2\sigma} \to \infty$, logo o denominador é ilimitado e o numerador limitado. 
+
+Concluo que $\lim_{\sigma\to\infty} \rho_{\min} = \lim_{\sigma\to\infty} \rho_{\max} = 0$.
+
+## Problema 3.24
+
+```{r message = FALSE}
+library(copula)   #carregando a copula
+rho <- seq(from = 0, to = 1, by = 0.05)
+
+for (param in rho){
+  ncopula <- normalCopula(param = param)
+  SD <- rCopula(ncopula, n = 2000)
+}
+```
+
+
+## Análise da ETTJ Brasileira
+
+Primeiro farei o import dos dados:
+
+```{r}
+dir <- "/home/lucasmoschen/Documents/GitHub/Quantitative_Finance/data/"
+file <- "prices_Swap_PRE_DI.RData"
+load(file = paste(dir,file,sep=""))
+```
+
+
