@@ -115,16 +115,152 @@ Concluo que $\lim_{\sigma\to\infty} \rho_{\min} = \lim_{\sigma\to\infty} \rho_{\
 
 ## Problema 3.24
 
+1. 
+
 ```{r message = FALSE}
 library(copula)   #carregando a copula
 rho <- seq(from = 0, to = 1, by = 0.05)
 
+correlation <- list("Pearson" = c(), "Kendall" = c(), "Spearman" = c())
 for (param in rho){
   ncopula <- normalCopula(param = param)
   SD <- rCopula(ncopula, n = 2000)
+  # Exercise 1.1
+  SD <- qnorm(SD, mean = 0, sd = 1) 
+  # Exercise 1.2
+  pcov <- cor(x = SD[,1], y = SD[,2], method = "pearson")
+  kcov <- cor(x = SD[,1], y = SD[,2], method = "kendall")
+  scov <- cor(x = SD[,1], y = SD[,2], method = "spearman")
+  
+  correlation$Pearson <- append(correlation$Pearson, pcov)
+  correlation$Kendall <- append(correlation$Kendall, kcov)
+  correlation$Spearman <- append(correlation$Spearman, scov)
 }
+print(dim(SD))
+
+# Exercise 1.3 and 1.4
+
+par(mfrow = c(3,1), mar = c(1,2,3,2))
+plot(rho, correlation$Pearson, main = "Pearson Correlation",
+     col = "red", ylab = "Cor. value" )
+points(x = rho, y =  rho, type= 'l', col = "grey")
+plot(rho, correlation$Kendall, main = "Kendall Correlation",
+     col = "blue", ylab = "Cor. value")
+points(x = rho, y =  rho, type= 'l', col = "grey")
+plot(rho, correlation$Spearman, main = "Spearman Correlation", 
+     col = "green", ylab = "Cor. value")
+points(x = rho, y =  rho, type= 'l', col = "grey")
 ```
 
+Observamos que os gráficos de Pearson e Spearman, a correlação das variáveis comparado com a correlação do parâmetro da cópula Gaussiana está em cima da reta $y = x$. Dessa maneira, podemos, pelo menos visualmente, ver que o parâmetro da cópula é exatamente a correlação das variáveis gaussianas que estamos modelando. Isso nos dá uma interpretação bem clara do que é esse parâmetro quando estamos calculando amostras aleatórias.
+
+No caso da correlação de Kendall, vemos que o gráfico fica um pouco a baixo da reta $y = x$, significando que ela é menor do que a correlação de pearson para esses valores. Isso faz sentido por que a contribuição para uma mudança de sinal é equivalente sempre, enquanto na de Pearson, ela é Ponderada por seu tamanho.
+
+```{r message = FALSE}
+# Exercise 1.5: Cauchy Distribution
+rho <- seq(from = 0, to = 1, by = 0.05)
+
+correlation <- list("Pearson" = c(), "Kendall" = c(), "Spearman" = c())
+for (param in rho){
+  ncopula <- normalCopula(param = param)
+  SD <- rCopula(ncopula, n = 2000)
+  SD <- qcauchy(SD, location = 0, scale = 1) 
+  pcov <- cor(x = SD[,1], y = SD[,2], method = "pearson")
+  kcov <- cor(x = SD[,1], y = SD[,2], method = "kendall")
+  scov <- cor(x = SD[,1], y = SD[,2], method = "spearman")
+  
+  correlation$Pearson <- append(correlation$Pearson, pcov)
+  correlation$Kendall <- append(correlation$Kendall, kcov)
+  correlation$Spearman <- append(correlation$Spearman, scov)
+}
+
+par(mfrow = c(3,1), mar = c(1,2,3,2))
+plot(rho, correlation$Pearson, main = "Pearson Correlation",
+     col = "red", ylab = "Cor. value" )
+points(x = rho, y =  rho, type= 'l', col = "grey")
+plot(rho, correlation$Kendall, main = "Kendall Correlation",
+     col = "blue", ylab = "Cor. value")
+points(x = rho, y =  rho, type= 'l', col = "grey")
+plot(rho, correlation$Spearman, main = "Spearman Correlation", 
+     col = "green", ylab = "Cor. value")
+points(x = rho, y =  rho, type= 'l', col = "grey")
+```
+
+A correlação de Pearson ficou extremamente diferente. Isso faz com que o parâmetro nã odeva ser interpretado como a correlação das variáveis, dado que a cauda das distribuições marginais é mais pesada. A correlação de Kendall manteve a propriedade, dado que, como comentado anteriormente, o que é considerado é apenas o sinal, não o tamanho da diferença. Por fim, a correlação de Spearman mostrou-se ainda ter a mesma interpretação. Isso ocorre, pois ela tem o objetivo de remover o tamanho relativo de $X$ e $Y$ e captura a correlação apenas com o que sobrou da dependência, que nesse caso é uma cópula normal, que como visto acima, tem a mesma interpretação para Pearson e Spearman. 
+
+2. 
+
+```{r message = FALSE}
+beta <- seq(from = 1, to = 20, by = 0.5)
+
+correlation <- list("Pearson" = c(), "Kendall" = c(), "Spearman" = c())
+for (param in beta){
+  gcopula <- gumbelCopula(param = param)
+  SD <- rCopula(gcopula, n = 2000)
+  # Exercise 2.1
+  SD <- qnorm(SD, mean = 0, sd = 1) 
+  # Exercise 2.2
+  pcov <- cor(x = SD[,1], y = SD[,2], method = "pearson")
+  kcov <- cor(x = SD[,1], y = SD[,2], method = "kendall")
+  scov <- cor(x = SD[,1], y = SD[,2], method = "spearman")
+  
+  correlation$Pearson <- append(correlation$Pearson, pcov)
+  correlation$Kendall <- append(correlation$Kendall, kcov)
+  correlation$Spearman <- append(correlation$Spearman, scov)
+}
+print(dim(SD))
+
+# Exercise 2.3 and 2.4
+
+par(mfrow = c(1,3), mar = c(15,2,3,2))
+plot(beta, correlation$Pearson, main = "Pearson Correlation",
+     col = "red", ylab = "Cor. value" )
+abline(h = 0.8, col = "grey")
+plot(beta, correlation$Kendall, main = "Kendall Correlation",
+     col = "blue", ylab = "Cor. value")
+abline(h = 0.8, col = "grey")
+plot(beta, correlation$Spearman, main = "Spearman Correlation", 
+     col = "green", ylab = "Cor. value")
+abline(h = 0.8, col = "grey")
+```
+
+Percebemos pelo gráfico que a correlação é nula para todos quando $\beta = 1$. Além disso, nos três gráficos, observamos que $\beta > 5$ fez com que a correlação superasse $0.8$.
+
+Isso nos mostra que a cópula de Gumbel é muito favorável a variáveis que apresentem alta correlação, dado que o parâmetro $\beta$ permite esse tipo de análise. Os gráficos também são côncavos, o que mostra que o crescimento acentuado do inínio do gráfico vai se reduzindo ao longo da curva. 
+
+```{r message = FALSE}
+# Exercise 2.5: Cauchy Distribution
+beta <- seq(from = 1, to = 20, by = 0.5)
+
+correlation <- list("Pearson" = c(), "Kendall" = c(), "Spearman" = c())
+for (param in beta){
+  gcopula <- gumbelCopula(param = param)
+  SD <- rCopula(gcopula, n = 2000)
+  SD <- qcauchy(SD, location = 0, scale = 1) 
+
+  pcov <- cor(x = SD[,1], y = SD[,2], method = "pearson")
+  kcov <- cor(x = SD[,1], y = SD[,2], method = "kendall")
+  scov <- cor(x = SD[,1], y = SD[,2], method = "spearman")
+  
+  correlation$Pearson <- append(correlation$Pearson, pcov)
+  correlation$Kendall <- append(correlation$Kendall, kcov)
+  correlation$Spearman <- append(correlation$Spearman, scov)
+}
+print(dim(SD))
+
+par(mfrow = c(1,3), mar = c(15,2,3,2))
+plot(beta, correlation$Pearson, main = "Pearson Correlation",
+     col = "red", ylab = "Cor. value" )
+abline(h = 0.8, col = "grey")
+plot(beta, correlation$Kendall, main = "Kendall Correlation",
+     col = "blue", ylab = "Cor. value")
+abline(h = 0.8, col = "grey")
+plot(beta, correlation$Spearman, main = "Spearman Correlation", 
+     col = "green", ylab = "Cor. value")
+abline(h = 0.8, col = "grey")
+```
+
+Da mesma forma como falamos no primeiro exercício, a correlação de Pearson perde o padrão dada a diferença das caudas. Além disso, ela não segue nem o padrão de crescimento antes visto e perde a interpretabilidade. Já a correlação de Kendall e Spearman apresentam comportamento similar, já que procuram reduzir a influência do tamanho das variáveis em questão. 
 
 ## Análise da ETTJ Brasileira
 
