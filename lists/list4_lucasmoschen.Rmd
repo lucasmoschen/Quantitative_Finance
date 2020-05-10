@@ -2,7 +2,7 @@
 title: "Finanças Quantitativas: Lista 4"
 author: "Lucas Moschen"
 affiliation: "Fundação Getulio Vargas"
-date: "08 de maio de 2020"
+date: "10 de maio de 2020"
 output: pdf_document
 ---
 
@@ -67,7 +67,7 @@ $$E[Y^2] = e^{2\sigma^2}$$
 $$Var[X] = E[X^2] - E[X]^2 = e^2 - e$$
 $$Var[Y] = E[Y^2] - E[Y]^2 = e^{\sigma^2}(e^{\sigma^2} - 1)$$
 
-Podemos dizer que $X$ e $Y$ são contramonotônicas, pois $(X, Y) = (e^{\log X})(e^{-\log Y}) = (e^{\log X})(e^{-\sigma\log X})$, isto é, existe uma variável aleatória e duas funções, uma crescente e uma deecrescente, onde vale essa igualdade em distribuição. Logo, elas admitem o limite inferior Fréchet-Hoeffding na cópula, que no caso é de uma Gaussiana. Assim, o valor mínimo da correlação é atingido quando a cópula é minima, que ocorre quando as variáveis são contramonotônicas. 
+Podemos dizer que $X$ e $Y$ são contramonotônicas, pois $(X, Y) = (e^{\log X})(e^{-\log Y}) = (e^{\log X})(e^{-\sigma\log X})$, isto é, existe uma variável aleatória e duas funções, uma crescente e uma decrescente, onde vale essa igualdade em distribuição. Logo, elas admitem o limite inferior Fréchet-Hoeffding na cópula, que no caso é de uma Gaussiana. Assim, o valor mínimo da correlação é atingido quando a cópula é minima, que ocorre quando as variáveis são contramonotônicas. Isso ocorre, pois o valor esperado preserva ordem.  
 
 Agora, podemos calcular os valores desejados: 
 $$
@@ -84,7 +84,7 @@ Como queríamos mostrar.
 
 3. $\rho_{\max} = (e^{\sigma} - 1)/\sqrt{(e - 1)(e^{\sigma^2} - 1)}$
 
-De forma equivalente, podemos dizer que $X$ e $Y$ são comonotônicas, porque $(X,Y) = (e^{\log X}, e^{\sigma \log X})$ e temos duas funções crescentes com uma variável em comum. Desta forma, elas admitem o limite superior de Fréchet-Hoeffding. DEsta forma, maximizamos a covariância no valor máximo que a cópula assume. Utilizamos as contas do exercício anterior (3.17) e, da mesma forma que fizemos em 2. dessa exercício, a correlação máxima acontece quando as variáveis são comonotônicas. Logo:
+De forma equivalente, podemos dizer que $X$ e $Y$ são comonotônicas, porque $(X,Y) = (e^{\log X}, e^{\sigma \log X})$ e temos duas funções crescentes com uma variável em comum. Desta forma, elas admitem o limite superior de Fréchet-Hoeffding, isto é, maximizamos a covariância no valor máximo que a cópula assume. Utilizamos as contas do exercício anterior (3.17) e, da maneira fizemos em 2. dessa exercício, a correlação máxima acontece quando as variáveis são comonotônicas. Logo:
 $$
 \begin{split}
 \rho_{\max} &= \max \frac{Cor(X,Y)}{\sigma_X\sigma_Y} 
