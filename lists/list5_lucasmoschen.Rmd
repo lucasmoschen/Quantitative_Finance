@@ -3,6 +3,45 @@ title: "Finanças Quantitativas: Lista 5"
 author: "Lucas Moschen"
 affiliation: "Fundação Getulio Vargas"
 date: "24 de maio de 2020"
+header-includes:
+   - \usepackage{bm}
+   - \newcommand{\Lagr}{\mathcal{L}}
 output: pdf_document
 ---
 
+## Exercício 1
+
+### Problema 4.1 (Carmona)
+
+### Problema 4.11 (Carmona)
+
+### Problema 4.12 (Carmona)
+
+## Exercício 2
+
+Considere o modelo de regressão linear múltipla: 
+$$\boldsymbol{Y} = \boldsymbol{X}\beta + \epsilon$$
+E o custo associado a $\beta$, que queremos minimizar, é: 
+$$\begin{split}
+\Lagr_2(\beta) &= || \boldsymbol{Y} - \boldsymbol{X}\beta ||^2 = \langle \boldsymbol{Y} - \boldsymbol{X}\beta, \boldsymbol{Y} - \boldsymbol{X}\beta \rangle \\
+&= \langle \boldsymbol{Y}, \boldsymbol{Y} \rangle - 2\langle \boldsymbol{Y}, \boldsymbol{X}\beta \rangle + \langle \boldsymbol{X}\beta, \boldsymbol{X}\beta \rangle \\
+&= \langle \boldsymbol{Y}, \boldsymbol{Y} \rangle - 2\langle  \boldsymbol{X}\beta, \boldsymbol{Y} \rangle + \langle \boldsymbol{X}\beta, \boldsymbol{X}\beta \rangle \\
+&= \boldsymbol{Y}^T\boldsymbol{Y} - 2\beta^T\boldsymbol{X}^T\boldsymbol{Y} + \beta^T\boldsymbol{X}^T\boldsymbol{X}\beta
+\end{split}
+$$
+Para minimizar esse valor, primeiro procuramos os pontos críticos. Nesse caso, veja que a primeira expressão independe do vetor $\beta$ e, portanto, sua derivada será $0$. A segunda expressão, temos uma combinação dos elementos do vetor $\beta$, logo, ao derivar parcialmente em relação a cada valor, obtemos a expressão equivalente e, por isso, a derivação é linear. Na última expressão, veja que $\boldsymbol{X}^T\boldsymbol{X}$ é uma expressão com os valores de $\beta$ quadráticos e, portanto, a expressão se segue:
+$$
+\begin{split}
+\frac{d}{d\beta}\Lagr_2(\hat{\beta}) &= -2\boldsymbol{X}^T\boldsymbol{Y} + 2\boldsymbol{X}^T\boldsymbol{X}\hat{\beta} = 0
+\end{split}
+$$
+Desta forma, como o posto de $\boldsymbol{X}$ é completo $\boldsymbol{X}^T\boldsymbol{X}$ tem colunas linearmente independentes e é, portanto, invertível. Desta maneita, temos uma solução única e:   
+
+$$\boldsymbol{X}^T\boldsymbol{X}\hat{\beta} = \boldsymbol{X}^T\boldsymbol{Y} \implies \hat{\beta} = (\boldsymbol{X}^T\boldsymbol{X})^{-1}\boldsymbol{X}^T\boldsymbol{Y}$$
+Nesse obtemos que $\hat{\beta}$ é um ponto crítico. Para averiguar se é argumento mínimo, façamos: 
+$$
+\frac{d^2}{d\beta^2} \Lagr_2(\hat{\beta}) = 2\boldsymbol{X}^T\boldsymbol{X}
+$$
+A matriz $\boldsymbol{X}^T\boldsymbol{X}$ é simétrica e, $\forall x \in \mathbb{R}^{p+1}, x^T\boldsymbol{X}^T\boldsymbol{X}x = \langle \boldsymbol{X}x, \boldsymbol{X}x \rangle \geq 0$ e será igual a $0$ somente se $\boldsymbol{X}x = 0$. Como $X$ tem posto completo, ele tem espaço anulado com dimensão $0$ e, poranto, $anul(X) = \{0\}$ e, se $\boldsymbol{X}x = 0, x = 0$. Concluo, então que essa matriz é estritamente positiva e, desta maneira, $\hat{\beta}$ é de fato um mínimo da expressão. 
+
+## Exercício 3
