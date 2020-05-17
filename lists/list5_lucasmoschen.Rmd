@@ -13,6 +13,25 @@ output: pdf_document
 
 ### Problema 4.1 (Carmona)
 
+#### Item 1
+
+Considere a seguinte imagem do livro. 
+
+![Image 4.22 from Carmona Book](/home/lucasmoschen/Documents/GitHub/Quantitative_Finance/data/fig4-22.png)
+Podemos observar que o plote da esquerda tem o eixo X marcado pelo índice de determinadas observações e o eixo Y valores, quase todos, estritamente positivos (com excessão aparente de um). Isso não é a característica de resíduos brutos, onde $\hat{\epsilon}_i = y - \hat{y}_i$, dado que a média desses resíduos é de longe $0$. Como temos uma quantidade relativamente grande de observações e esperamos que os erros tenham média $0$ ao modelarmos o erro quadrático, vemos que não é possível que esse plote represente isso. 
+
+#### Item 2
+
+Ainda sobre a figura acima, obseve que quanto maior o índice, mais os resíduos se concentram em torno de $0$. Como eles se concentram, podemos dizer, com base no gráfico que quanto maior o índice $i$, menor a variância em torno da média do resíduo. Conhecemos nesse capítulo que os resíduos tem desvio padrão $$\sigma_{\epsilon_i} = \sigma\sqrt{1 - h_{i,i}}$$
+Assim, $h_{i,i}$ tem um comportamento crescente em relação ao índice, isto é, a diagonal tem termos em uma sequência crescente. 
+
+#### Item 3
+
+Agora considere essa imagem: 
+
+![Image 4.23  from Carmona Book](/home/lucasmoschen/Documents/GitHub/Quantitative_Finance/data/fig4-23.png)
+Parece-me que essa linha é uma regressão linear com desvios absolutos, visto que ela não se influencia tanto com os três outliers na parte de cima do gráfico. Isto acontece, pois a regressão $\Lagr_1$ é menos sensível a *outliers*. 
+
 ### Problema 4.11 (Carmona)
 
 ### Problema 4.12 (Carmona)
