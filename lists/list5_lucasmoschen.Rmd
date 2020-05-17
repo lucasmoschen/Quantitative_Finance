@@ -108,24 +108,41 @@ Esses são os *trading symbols* das componentes que integram a Ibovespa, segundo
 
 ```{r}
 df.ibov <- GetIbovStocks()
-first.date <- Sys.Date() - 100
-last.date <- Sys.Date() 
+first.date <- Sys.Date() - 90
+last.date <- Sys.Date() - 60
 
 print(df.ibov$tickers)
 ```
 
 ### Item b
 
+Tomo os dados históricos do período de 100 dias anteriores ao dia 22 de maio de 2020 de cada uma das 75 ações da Ibovespa. Integro elas em uma lista que conterá também a informação dos dados do índice da Ibovespa.
+
 ```{r message = FALSE, warning=FALSE}
-stocks <- list()
+df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
+stocks <- data.frame(BVSP = df$df.tickers$price.close)
+
 for (ticker in df.ibov$tickers) {
   tickerSA = paste(ticker, ".SA", sep = "") 
-  df <- BatchGetSymbols(tickerSA, first.date = first.date, last.date = last.date) 
-  stocks[tickerSA] = df$tickers
+  df <- BatchGetSymbols(tickerSA, first.date =   first.date, last.date = last.date)
+  stocks <- cbind(stocks, df$df.tickers$price.close)
 } 
-df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date) 
-stocks["BVSP"] <- df$tickers 
+names(stocks) <- append(c("BVSP"), df.ibov$tickers)
+
+# Removing NA values
+
+stocks <- stocks[complete.cases(stocks),]
 ```
+
+### Item c
+
+```{r}
+# Primeiro, vamos calcular os log-retornos de cada ação. 
+stocks <- diff(log(as.matrix(stocks)))
+
+# Vou supor que o portfolio de mercado é dado pelo índice da Ibovespa.
+```
+
 
 
 
