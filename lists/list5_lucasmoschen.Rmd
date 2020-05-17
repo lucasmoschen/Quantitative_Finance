@@ -30,24 +30,57 @@ Assim, $h_{i,i}$ tem um comportamento crescente em relação ao índice, isto é
 Agora considere essa imagem: 
 
 ![Image 4.23  from Carmona Book](/home/lucasmoschen/Documents/GitHub/Quantitative_Finance/data/fig4-23.png)
-Parece-me que essa linha é uma regressão linear com desvios absolutos, visto que ela não se influencia tanto com os três outliers na parte de cima do gráfico. Isto acontece, pois a regressão $\Lagr_1$ é menos sensível a *outliers*. 
+Parece-me que essa linha é uma **regressão linear com desvios absolutos**, visto que ela não se influencia tanto com os três *outliers* na parte de cima do gráfico. Isto acontece, pois a regressão $\Lagr_1$ é menos sensível a *outliers*.  
 
 ### Problema 4.11 (Carmona)
 
+Neste exercício, pretendemos analizar um exemplo de regressão não linear. Os dados são de uma droga *Puromycin* e possui uma tabela com três variáveis de um experimento biomédico em células, tratadas ou não. Denotamos $y$ como a velocidade inicial da reação, enquanto $x$ é a concentração da enzima. Pela relação de Michaelis-Menten, onde $V_a$ é a velocidade assintótica e $K$ uma constante:
+$$y = \phi(x) = V_a\frac{x}{x + K}$$
+
+#### Itens 1 e 2
+
+```{r message = FALSE}
+data("Puromycin", Puromycin)
+attach(Puromycin)
+y = Puromycin[state == "treated",]$rate
+x = Puromycin[state == "treated",]$conc
+plot(x,y, xlab = "Concentração da Enzima", ylab = "Velocidade de Reação (counts/min/min)", 
+    main = "Relação não linear")
+
+y_fit = nls(y ~ Va*(x/(x + K)), start = c(Va = 200, K = 0.1))
+print("These are the estimated parameters:")
+print(coef(y_fit))
+
+lines(x, fitted(y_fit), col = "blue")
+
+legend(0.8, 100, legend = c("Real data","Estimate"), pch = c("o","l"), col = c("black", "blue"))
+```
+
 ### Problema 4.12 (Carmona)
+
+Nesse exercício, usadmos a família generalizada Vasicek para parametrizar o termo estrutural da taxa de juros. Definimos $Y_{GV}(x,\theta)$ como: 
+$$Y_{GC}(x,\theta) = \theta_1 - \theta_2\theta_4\frac{1 - e^{-x/\theta_4}}{x} + \theta_3\theta_4\frac{(1 - e^{-x/\theta_4})^2}{4x}$$
+
+#### Item 1
+
+#### Item 2
+
+#### Item 3
 
 ## Exercício 2
 
 Considere o modelo de regressão linear múltipla: 
 $$\boldsymbol{Y} = \boldsymbol{X}\beta + \epsilon$$
 E o custo associado a $\beta$, que queremos minimizar, é: 
-$$\begin{split}
+$$
+\begin{split}
 \Lagr_2(\beta) &= || \boldsymbol{Y} - \boldsymbol{X}\beta ||^2 = \langle \boldsymbol{Y} - \boldsymbol{X}\beta, \boldsymbol{Y} - \boldsymbol{X}\beta \rangle \\
 &= \langle \boldsymbol{Y}, \boldsymbol{Y} \rangle - 2\langle \boldsymbol{Y}, \boldsymbol{X}\beta \rangle + \langle \boldsymbol{X}\beta, \boldsymbol{X}\beta \rangle \\
 &= \langle \boldsymbol{Y}, \boldsymbol{Y} \rangle - 2\langle  \boldsymbol{X}\beta, \boldsymbol{Y} \rangle + \langle \boldsymbol{X}\beta, \boldsymbol{X}\beta \rangle \\
 &= \boldsymbol{Y}^T\boldsymbol{Y} - 2\beta^T\boldsymbol{X}^T\boldsymbol{Y} + \beta^T\boldsymbol{X}^T\boldsymbol{X}\beta
 \end{split}
 $$
+
 Para minimizar esse valor, primeiro procuramos os pontos críticos. Nesse caso, veja que a primeira expressão independe do vetor $\beta$ e, portanto, sua derivada será $0$. A segunda expressão, temos uma combinação dos elementos do vetor $\beta$, logo, ao derivar parcialmente em relação a cada valor, obtemos a expressão equivalente e, por isso, a derivação é linear. Na última expressão, veja que $\boldsymbol{X}^T\boldsymbol{X}$ é uma expressão com os valores de $\beta$ quadráticos e, portanto, a expressão se segue:
 $$
 \begin{split}
@@ -58,9 +91,41 @@ Desta forma, como o posto de $\boldsymbol{X}$ é completo $\boldsymbol{X}^T\bold
 
 $$\boldsymbol{X}^T\boldsymbol{X}\hat{\beta} = \boldsymbol{X}^T\boldsymbol{Y} \implies \hat{\beta} = (\boldsymbol{X}^T\boldsymbol{X})^{-1}\boldsymbol{X}^T\boldsymbol{Y}$$
 Nesse obtemos que $\hat{\beta}$ é um ponto crítico. Para averiguar se é argumento mínimo, façamos: 
-$$
-\frac{d^2}{d\beta^2} \Lagr_2(\hat{\beta}) = 2\boldsymbol{X}^T\boldsymbol{X}
-$$
+
+$$\frac{d^2}{d\beta^2} \Lagr_2(\hat{\beta}) = 2\boldsymbol{X}^T\boldsymbol{X}$$
+
 A matriz $\boldsymbol{X}^T\boldsymbol{X}$ é simétrica e, $\forall x \in \mathbb{R}^{p+1}, x^T\boldsymbol{X}^T\boldsymbol{X}x = \langle \boldsymbol{X}x, \boldsymbol{X}x \rangle \geq 0$ e será igual a $0$ somente se $\boldsymbol{X}x = 0$. Como $X$ tem posto completo, ele tem espaço anulado com dimensão $0$ e, poranto, $anul(X) = \{0\}$ e, se $\boldsymbol{X}x = 0, x = 0$. Concluo, então que essa matriz é estritamente positiva e, desta maneira, $\hat{\beta}$ é de fato um mínimo da expressão. 
 
 ## Exercício 3
+
+```{r message = FALSE}
+library(BatchGetSymbols) # get financial data 
+```
+
+### Item a
+
+Esses são os *trading symbols* das componentes que integram a Ibovespa, segundo a [página oficial](http://bvmf.bmfbovespa.com.br/indices/ResumoCarteiraTeorica.aspx?Indice=IBOV&idioma=pt-br). 
+
+```{r}
+df.ibov <- GetIbovStocks()
+first.date <- Sys.Date() - 100
+last.date <- Sys.Date() 
+
+print(df.ibov$tickers)
+```
+
+### Item b
+
+```{r message = FALSE, warning=FALSE}
+stocks <- list()
+for (ticker in df.ibov$tickers) {
+  tickerSA = paste(ticker, ".SA", sep = "") 
+  df <- BatchGetSymbols(tickerSA, first.date = first.date, last.date = last.date) 
+  stocks[tickerSA] = df$tickers
+} 
+df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date) 
+stocks["BVSP"] <- df$tickers 
+```
+
+
+
