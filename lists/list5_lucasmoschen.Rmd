@@ -108,8 +108,8 @@ Esses são os *trading symbols* das componentes que integram a Ibovespa, segundo
 
 ```{r}
 df.ibov <- GetIbovStocks()
-first.date <- Sys.Date() - 90
-last.date <- Sys.Date() - 60
+first.date <- Sys.Date() - 130
+last.date <- Sys.Date() - 100
 
 print(df.ibov$tickers)
 ```
@@ -123,14 +123,12 @@ df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
 stocks <- data.frame(BVSP = df$df.tickers$price.close)
 
 for (ticker in df.ibov$tickers) {
-  tickerSA = paste(ticker, ".SA", sep = "") 
+  tickerSA = paste(ticker, ".SA", sep = "")
   df <- BatchGetSymbols(tickerSA, first.date =   first.date, last.date = last.date)
   stocks <- cbind(stocks, df$df.tickers$price.close)
 } 
-names(stocks) <- append(c("BVSP"), df.ibov$tickers)
 
 # Removing NA values
-
 stocks <- stocks[complete.cases(stocks),]
 ```
 
@@ -138,9 +136,22 @@ stocks <- stocks[complete.cases(stocks),]
 
 ```{r}
 # Primeiro, vamos calcular os log-retornos de cada ação. 
-stocks <- diff(log(as.matrix(stocks)))
+stocks <- data.frame(diff(log(as.matrix(stocks))))
 
 # Vou supor que o portfolio de mercado é dado pelo índice da Ibovespa.
+# Vou considerar a taxa de juros predominante nesse período e tomar o excess return.
+r = 0.00018985
+stocks <- stocks - r
+
+# Renomear corretamente
+names(stocks) <- append(c("BVSP"), df.ibov$tickers)
+
+# Regressão Linear de Mínimos Quadrados
+coefficients <- data.frame(BVSP = c(0,1))
+for(i in 2:length(names(stocks))){
+  model <- lsfit(stocks$BVSP, stocks[names(stocks)[i]])
+  coefficients[names(stocks)[i]] = model$coefficients
+}
 ```
 
 
