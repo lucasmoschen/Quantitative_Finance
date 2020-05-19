@@ -108,23 +108,24 @@ Esses são os *trading symbols* das componentes que integram a Ibovespa, segundo
 
 ```{r}
 df.ibov <- GetIbovStocks()
-first.date <- Sys.Date() - 130
-last.date <- Sys.Date() - 100
-
 print(df.ibov$tickers)
 ```
 
 ### Item b
 
-Tomo os dados históricos do período de 100 dias anteriores ao dia 22 de maio de 2020 de cada uma das 75 ações da Ibovespa. Integro elas em uma lista que conterá também a informação dos dados do índice da Ibovespa.
+Tomo os dados históricos do período de 01/01/2015 até o dia de 31/12/2019 cada uma das 66 ações da Ibovespa. Daquelas que printei acima e integram atualmente a bolsa, as ações de "AZUL4.SA", "BPAC11.SA", "BRDT3.SA", "CRFB3.SA", "GNDI3.SA", "HAPV3.SA", "IRBR3.SA", "NTCO3.SA" e "RAIL3.SA" (9 ao total) não possuiam atividade nesse período. Por simplicidade e para analisar um tempo mais complexo, eu as retiro das analisadas. Além disso, eu integro as ações em uma *dataframe* que conterá também a informação dos dados do índice da Ibovespa.
 
 ```{r message = FALSE, warning=FALSE}
+first.date <- "2015-01-01"
+last.date <- "2019-12-31"
+
 df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
 stocks <- data.frame(BVSP = df$df.tickers$price.close)
 
 for (ticker in df.ibov$tickers) {
   tickerSA = paste(ticker, ".SA", sep = "")
   df <- BatchGetSymbols(tickerSA, first.date =   first.date, last.date = last.date)
+  if(length(stocks$BVSP) != length(df$df.tickers$price.close)){next}
   stocks <- cbind(stocks, df$df.tickers$price.close)
 } 
 
@@ -144,16 +145,47 @@ r = 0.00018985
 stocks <- stocks - r
 
 # Renomear corretamente
-names(stocks) <- append(c("BVSP"), df.ibov$tickers)
+names(stocks) <- append(c("BVSP"), df.ibov$tickers[-c(2,9,11,21,36,39,43,54,60)])
 
 # Regressão Linear de Mínimos Quadrados
-coefficients <- data.frame(BVSP = c(0,1))
+coefficients <- data.frame(BVSP = c("Intersept","Slope"))
 for(i in 2:length(names(stocks))){
   model <- lsfit(stocks$BVSP, stocks[names(stocks)[i]])
   coefficients[names(stocks)[i]] = model$coefficients
 }
+
+# Destaco os coeficientes estimados para as 4 primeiras ações:
+print(coefficients[,1:6])
+
+# Plotting dessas quatro primeiras ações, cada uma em seu respectivo eixo y contra o retorno de mercado.
+par(mfrow = c(2,2), mar = c(2,2,2,1))
+
+# Plotting dos gráficos
+plot(stocks$BVSP, stocks$ABEV3, main = "BVSP X ABEV")
+abline(a = coefficients[1,2], b = coefficients[2,2], col = "green")
+plot(stocks$BVSP, stocks$B3SA3, main = "BVSP X B3SA")
+abline(a = coefficients[1,3], b = coefficients[2,3], col = "green")
+plot(stocks$BVSP, stocks$BBAS3, main = "BVSP X BBAS")
+abline(a = coefficients[1,4], b = coefficients[2,4], col = "green")
+plot(stocks$BVSP, stocks$BBDC3, main = "BVSP X BBCD")
+abline(a = coefficients[1,5], b = coefficients[2,5], col = "green")
 ```
 
+É interessante que visualmente já percebemos que os interceptos são muito próximos a 0, como esperávamos. De fato, a média do valor absoluto é mostrada na figura. Também vemos como de fato os dados tem um comportamento linear. Além disso, aprendemos que a estimativa da inclinação da reta ($\hat{\beta}_j$) para cada ativo é conhecida como investimento beta e mede a sensitividade do retorno com as variações dos retornos do portifólio de mercado. Assim, quando esse valor é maior do que 1, temos ativos com mais risco. Para visualizar, considere o seguinte gráfico, ele indica as diferenças de cada dessa estimativa para cada ativo. 
 
+```{r}
+print("Valor médio absoluto do intersepto")
+print(mean(abs(as.matrix(coefficients[1,-1]))))
 
+par(mar = c(2,2,2,1))
+barplot(as.matrix(sort(coefficients[2,-1], decreasing = TRUE)), col = "blue")
+abline(h = 1.0, col = "red")
+abline(v = 32.0, col = "green")
+```
+
+Nesse gráfico, podemos perceber que aproximadamente 40% dos ativos tem investimento beta maior do que 1. Além disso, dois ativos demonstraram que a estimativa da inclinação é negativo. Mas os valores são próximos de $0$, o que indica possível atuação de *outliers*.
+
+## Item d
+
+## Item e
 
