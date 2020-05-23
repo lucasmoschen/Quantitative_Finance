@@ -355,7 +355,7 @@ demonstrou a estimativa próxima a $0$, o que indica possível atuação de *out
 
 1. Existência significativa de uma relação linear.
 
-Observe o BoxPLot gerado com os valores do $R_2$. Apesar de nas figuras, haver uma tendência linear dos dados, existe muito ruído e a mediana dos dados é em torno de 0.25. Nesse caso, não conseguimos extrair completamente a relação linear dos dados com o nosso modelo. 
+Observe o BoxPLot gerado com os valores do $R_2$. Apesar de haver uma tendência linear dos dados nos gráficos apresentados, existe muito ruído e a mediana do coeficiente $R_2$ é em torno de 0.25. Nesse caso, não conseguimos extrair completamente a relação linear dos dados com o nosso modelo. 
 
 ```{r}
 boxplot(r2, col = "blue")
@@ -405,6 +405,60 @@ abline(0,1, col = "blue")
 
 4. Estabilidade. 
 
-Para isso, vamos utilizar os dados do ano de 2018 para checar se há constância do parâmetro ao longo do tempo. Como notado pelo livro-texto, esse é um grande problema que será abordado mais para frent, em outros capítulos. Ademais, farei esse teste. 
+Para isso, vamos utilizar os dados do ano de 2018 para checar se há constância do parâmetro ao longo do tempo. Como notado pelo livro-texto, esse é um grande problema que será abordado mais para frent, em outros capítulos. Ademais, farei esse teste. Nesse caso, aleém di ativo atual "NTCO3.SA", "GNDI3.SA" e "HAPV3.SA" também não apresentam dados referentes a esse ano e, portanto, não serão considerados. 
+
+```{r message = FALSE, warning=FALSE, echo = FALSE}
+first.date <- "2018-01-01"
+last.date <- "2018-12-31"
+
+df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
+stocks <- data.frame(BVSP = df$df.tickers$price.close)
+
+for (ticker in df.ibov$tickers) {
+  tickerSA = paste(ticker, ".SA", sep = "")
+  df <- BatchGetSymbols(tickerSA, first.date =   first.date, last.date = last.date)
+  if(length(stocks$BVSP) != length(df$df.tickers$price.close)){
+    next
+  }
+  stocks <- cbind(stocks, df$df.tickers$price.close)
+} 
+
+# Removing NA values
+stocks <- stocks[complete.cases(stocks),]
+```
+
+```{r, echo=FALSE}
+# Primeiro, vamos calcular os log-retornos de cada ação. 
+logstocks <- data.frame(diff(log(as.matrix(stocks))))
+
+# Taxa de juros diária
+r = 0.0002492537
+logstocks <- logstocks - r
+
+# Renomear corretamente
+names(logstocks) <- append(c("BVSP"), df.ibov$tickers[-c(36,39,54)])
+```
+
+```{r, echo = FALSE}
+# Regressão Linear de Mínimos Quadrados
+coefficients2018 <- data.frame(BVSP = c("Intercept","Slope"))
+
+for(i in 2:length(names(logstocks))){
+  model <- lsfit(logstocks$BVSP, logstocks[names(logstocks)[i]])
+  coefficients2018[names(logstocks)[i]] = model$coefficients
+}
+coefficients2019 <- coefficients[,-c(36,39)]
+```
+
+Assim, seja *coefficients2018* os coeficientes estimados para cada ativo em 2018, e *coefficients2019* para 2019. Os códigos foram omitidos, para não atrapalhar a análise. Logo:
+
+```{r}
+plot(matrix(coefficients2019[2,-1]), matrix(coefficients2018[2,-1]), 
+     main = "Relação entre as inclinações de 2018 e 2019", 
+     xlab = "2019", ylab = "2018")
+abline(a = 0, b = 1, col = "blue")
+```
+
+Assim percebemos que de fato a maioria dos ativos apresentou o mesmo coeficiente $beta$, aproximadamente. Claro que outros fatores afetam essa análise e isso deve ser cautelosamente re-analisado com ferramentas mais avançadas.
 
 ## Item e
