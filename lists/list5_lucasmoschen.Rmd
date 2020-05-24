@@ -117,16 +117,20 @@ par(mfrow = c(2,2))
 x <- seq(from = 0, to = 30, by = 0.5)
 # Exemplo 1
 theta = c(0.07, -0.03, 0.1, 2.5)
-plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV")
+plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV", 
+     main = "Exemplo 1")
 # Exemplo 2: Observe o aumento dos parâmetros e o pico da curva
 theta = c(0.08, 0.05, 0.5, 4.5)
-plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV")
+plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV", 
+     main = "Exemplo 2")
 # Exemplo 3: Agora theta3 é negativo e theta4 bem pequeno
 theta = c(0.02, -0.01, -0.1, 0.5)
-plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV")
+plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV", 
+     main = "Exemplo 3")
 # Exemplo 4: Nesse caso, como não respeitamos a relação citada, não há pico. 
 theta = c(0.07, -0.05, 0.05, 2.5)
-plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV")
+plot(x,fgv(x, theta), type = "l", xlab = "Maturity", ylab = "FGV", 
+     main = "Exemplo 4")
 ```
 
 #### Item 2
@@ -140,7 +144,8 @@ Agora considere a função R:
 
 ```{r}
 bgv <- function(x,theta){
-  value <- (-theta[1])*x + theta[2]*theta[4]*(1 - exp(-x/theta[4]) - (1/4)*theta[3]*theta[4]*(1 - exp(-x/theta[4]))^2)
+  value <- (-theta[1])*x + theta[2]*theta[4]*(1 - exp(-x/theta[4]) 
+                                              - (1/4)*theta[3]*theta[4]*(1 - exp(-x/theta[4]))^2)
   return(exp(value))
 }
 ```
@@ -152,16 +157,20 @@ par(mfrow = c(2,2))
 x <- seq(from = 0, to = 30, by = 0.5)
 # Exemplo 1
 theta = c(0.07, -0.03, 0.1, 2.5)
-plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV")
+plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV", 
+     main = "Exemplo 1")
 # Exemplo 2: Observe o aumento dos parâmetros e o pico da curva
 theta = c(0.08, 0.05, 0.5, 4.5)
-plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV")
+plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV", 
+     main = "Exemplo 2")
 # Exemplo 3: Agora theta3 é negativo e theta4 bem pequeno
 theta = c(0.02, -0.01, -0.1, 0.5)
-plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV")
+plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV", 
+     main = "Exemplo 3")
 # Exemplo 4: Nesse caso, como não respeitamos a relação citada, não há pico. 
 theta = c(0.07, -0.05, 0.05, 2.5)
-plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV")
+plot(x,bgv(x, theta), type = "l", xlab = "Maturity", ylab = "BGV", 
+     main = "Exemplo 4")
 ```
 
 #### Item 3
@@ -341,7 +350,8 @@ abline(a = coefficients[1,5], b = coefficients[2,5], col = "green")
 print(mean(abs(as.matrix(coefficients[1,-1]))))
 
 par(mar = c(2,2,2,1))
-barplot(as.matrix(sort(coefficients[2,-1], decreasing = TRUE)), col = "blue")
+barplot(as.matrix(sort(coefficients[2,-1], decreasing = TRUE)), col = "blue", 
+        main = "Estimativas da inclinação")
 abline(h = 1.0, col = "red")
 abline(v = 35.0, col = "green")
 ```
@@ -358,7 +368,7 @@ demonstrou a estimativa próxima a $0$, o que indica possível atuação de *out
 Observe o BoxPLot gerado com os valores do $R_2$. Apesar de haver uma tendência linear dos dados nos gráficos apresentados, existe muito ruído e a mediana do coeficiente $R_2$ é em torno de 0.25. Nesse caso, não conseguimos extrair completamente a relação linear dos dados com o nosso modelo. 
 
 ```{r}
-boxplot(r2, col = "blue")
+boxplot(r2, col = "blue", main = "Análise completa do R2")
 ```
 
 2. Um intercepto 0.
@@ -366,7 +376,7 @@ boxplot(r2, col = "blue")
 Observe boxplot do t-teste realizado e o comportamento do p-valor. Apenas 8 ativos tiveram o p-valor inferior a 0.05. Logo, na maioria dos casos, não é possível rejeitar a hipótese nula de que o intercepto é 0. 
 
 ```{r}
-boxplot(p.value.intercept, col = "blue")
+boxplot(p.value.intercept, col = "blue", main = "Análise completa do p-valor")
 ```
 
 
@@ -376,8 +386,8 @@ Para isso, vamos aplicar dois conhecimentos do livro. O primeiro é analisar a m
 
 ```{r}
 par(mfrow = c(1,2))
-boxplot(mean.residual, col = "green")
-boxplot(median.residual, col = "red")
+boxplot(mean.residual, col = "green", main = "Média dos resíduos")
+boxplot(median.residual, col = "red", main = "Mediana dos resíduos")
 ```
 Para a segunda análise, proposta pelo livro, façamos novamente os plots das quatro primeiras ações da bolsa que foram mostrados anteriormente. Mas agora, analisaremos os resíduos em um qqnorm. Com excessão de alguns poucos *outliers*, podemos inferir que a distribuição dos erros é de fato normal. 
 
@@ -411,41 +421,41 @@ Para isso, vamos utilizar os dados do ano de 2018 para checar se há constância
 first.date <- "2018-01-01"
 last.date <- "2018-12-31"
 
-df <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
-stocks <- data.frame(BVSP = df$df.tickers$price.close)
+df2018 <- BatchGetSymbols("^BVSP", first.date = first.date, last.date = last.date)
+stocks2018 <- data.frame(BVSP = df2018$df.tickers$price.close)
 
 for (ticker in df.ibov$tickers) {
   tickerSA = paste(ticker, ".SA", sep = "")
-  df <- BatchGetSymbols(tickerSA, first.date =   first.date, last.date = last.date)
-  if(length(stocks$BVSP) != length(df$df.tickers$price.close)){
+  df2018 <- BatchGetSymbols(tickerSA, first.date = first.date, last.date = last.date)
+  if(length(stocks2018$BVSP) != length(df2018$df.tickers$price.close)){
     next
   }
-  stocks <- cbind(stocks, df$df.tickers$price.close)
+  stocks2018 <- cbind(stocks2018, df2018$df.tickers$price.close)
 } 
 
 # Removing NA values
-stocks <- stocks[complete.cases(stocks),]
+stocks2018 <- stocks2018[complete.cases(stocks2018),]
 ```
 
 ```{r, echo=FALSE}
 # Primeiro, vamos calcular os log-retornos de cada ação. 
-logstocks <- data.frame(diff(log(as.matrix(stocks))))
+logstocks2018 <- data.frame(diff(log(as.matrix(stocks2018))))
 
 # Taxa de juros diária
 r = 0.0002492537
-logstocks <- logstocks - r
+logstocks2018 <- logstocks2018 - r
 
 # Renomear corretamente
-names(logstocks) <- append(c("BVSP"), df.ibov$tickers[-c(36,39,54)])
+names(logstocks2018) <- append(c("BVSP"), df.ibov$tickers[-c(36,39,54)])
 ```
 
 ```{r, echo = FALSE}
 # Regressão Linear de Mínimos Quadrados
 coefficients2018 <- data.frame(BVSP = c("Intercept","Slope"))
 
-for(i in 2:length(names(logstocks))){
-  model <- lsfit(logstocks$BVSP, logstocks[names(logstocks)[i]])
-  coefficients2018[names(logstocks)[i]] = model$coefficients
+for(i in 2:length(names(logstocks2018))){
+  model <- lsfit(logstocks2018$BVSP, logstocks2018[names(logstocks2018)[i]])
+  coefficients2018[names(logstocks2018)[i]] = model$coefficients
 }
 coefficients2019 <- coefficients[,-c(36,39)]
 ```
@@ -462,3 +472,20 @@ abline(a = 0, b = 1, col = "blue")
 Assim percebemos que de fato a maioria dos ativos apresentou o mesmo coeficiente $beta$, aproximadamente. Claro que outros fatores afetam essa análise e isso deve ser cautelosamente re-analisado com ferramentas mais avançadas.
 
 ## Item e
+
+A maioria das análises já foi automatizada ao longo do trabalho, como o coeficiente $R_2$ e o p-valor. 
+Como eu acredito que as visualizações são importantes para as análises que aprendemos, e seguindo a sugestão do exercício de analisar as hipóteses para as ações mais importantes, proponho utilizar algo que já estudamos no curso: **PCA**. 
+
+Assim, considere:
+
+```{r}
+stocks.pca <- princomp(log(as.matrix(stocks[,-1])))
+summary(stocks.pca)
+plot(stocks.pca, main = "Proporção da variância explicada pelos componentes")
+```
+
+Com esses resumos de texto e gráfico, podemos observar que as 4 primeiras componentes resumem mais de 90% de todos os dados sobre os ativos. Nesse caso, eu poderia simplesmente fazer as análises no item D desses quatro primeiros ativos e os outros ativos teriam um comportamento similar. Observe que para os gráficos dos erros eu já fiz isso. 
+
+Para a etapa de estabilidade, com esses quatro ativos, posso fazer um equiparativo de mais anos e fazer o mesmo plot que inseri no item D. Claro que eu deveria selecionar quatro ações que tivessem dados em todos os períodos. 
+
+Foi isso que pensei sobre como automatizar a análise. Continuar a análise numérica do $R_2$ e dos p-valores de forma automática (respondendo aos itens 1 e 2 de D), e fazer um PCA sobre os *stocks* afim de obter o número de ações que represente, pelo menos, 90% da explicação dos dados e fazero estudos gráfico do itens 3 e 4 de D. 
