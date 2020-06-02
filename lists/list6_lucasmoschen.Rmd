@@ -1,0 +1,8 @@
+---
+title: "Finanças Quantitativas: Lista 6"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+date: "07 de junho de 2020"
+header-includes:
+output: pdf_document
+---
