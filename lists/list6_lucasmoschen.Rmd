@@ -6,3 +6,40 @@ date: "07 de junho de 2020"
 header-includes:
 output: pdf_document
 ---
+
+# Exercício 6.6
+
+*(i)* $X_t - X_{t-1} = W_t - 1.5W_{t-1}$
+
+*(ii)* $X_t - 0.8X_{t-1} = W_t - 0.5W_{t-1}$
+
+$\{W_t\}_t \sim N(0, \sigma^2)$
+
+1. 
+i) Temos que $\phi_1 = 1, \theta_1 = -1.5$
+
+Modelo:  $(1 - B)X_t = (1 - 1.5B)W_t$
+
+$\phi(B) = 1 - B$
+
+$\theta(B) = 1 - 1.5B$
+
+ii) Temos que $\phi_1 = 0.8, \theta_1 = -0.5$
+
+Modelo: $(1 - 0.8B)X_t = (1 - 0.5B)W_t$
+
+$\phi(B) = 1 - 0.8B$
+
+$\theta(B) = 1 - 0.5B$
+
+2. Sabemos que em um modelo ARMA, a estacionaridade depende apenas do modelo AR e a invertibilidade depende apenas do modelo MA. Assim, se as raízes de $\phi(z)$ tem módulo maior do que 1, a série temporal é dita estacionária e se as raízes de $\theta(z)$ tem módulo maior do que 1, X é invertível. Consideremos cada modelo:
+
+i) Temos que $\phi(B) = 0 \implies B = 1$ e $\theta(B) = 0 \implies B = 2/3$. Desta maneira, dada a explicação acima, vemos que o modelo não é estacionário, mas é invertível. 
+
+ii) Temos que $\phi(B) = 0 \implies B = 5/4$ e $\theta(B) = 0 \implies B = 2$. Desta maneira, dada a explicação acima, vemos que o modelo não é estacionário e não é invertível. 
+
+
+# Exercício 6.11
+
+# Exercício 6.13
+
