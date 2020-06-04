@@ -38,8 +38,173 @@ i) Temos que $\phi(B) = 0 \implies B = 1$ e $\theta(B) = 0 \implies B = 2/3$. De
 
 ii) Temos que $\phi(B) = 0 \implies B = 5/4$ e $\theta(B) = 0 \implies B = 2$. Desta maneira, dada a explicação acima, vemos que o modelo não é estacionário e não é invertível. 
 
-
 # Exercício 6.11
+
+Assumimos que $\{X_t\}_t$ é da forma $X_t = \phi_1X_{t-1} + W_t$, para algum ruído branco forte de variância desconhecida $\sigma^2$.
+
+1. Amostra da distribuição normal padrão e amostra para a série temporal. 
+
+```{r}
+set.seed(200)
+N <- 5000
+w <- rnorm(n = N)
+x[1] = w[1]
+for (t in 2:N){
+  x[t] <- x[t - 1] + w[t] 
+}
+```
+
+2. 
+
+Primeiro declaremos as funções:
+```{r}
+phi1_hat <- function(x){
+  num <- sum(x[2:length(x)]*x[1:length(x)-1])
+  den <- sum(x[1:length(x)-1]^2)
+  return(num/den)
+}
+var_hat <- function(x,phi){
+  num <- x[1]**2
+  num <- num + sum((x[2:length(x)] - phi*x[1:length(x) - 1])^2) 
+  return(num/(length(x) - 1))
+} 
+DF_test <- function(phi, var){
+  return((phi - 1)/sqrt(var))
+}
+```
+
+Agora, calculemos para cada $n$ essas estatísticas: 
+
+```{r}
+phi1 <- array(NA, dim = N)
+var <- array(NA, dim = N)
+DF <- array(NA, dim = N)
+for(n in 1:N){
+  phi1[n] <- phi1_hat(x[1:n])
+  var[n] <- var_hat(x[1:n], phi1[n])
+  DF[n] <- DF_test(phi1[n], var[n])
+}
+
+par(mfrow = c(2,1))
+plot(phi1, main = "Sequencial Plot Estimates Phi", type = 'l', col = 'blue')
+abline(h = 1, col = 'green')
+plot(var, main = "Sequencial Plot Estimates Var", type = 'l', col = 'blue')
+abline(h = 1, col = 'green')
+```
+
+Observe de fato, a convergência para os valores que damos para cada parâmetro. Indico pela cor verde essa convergência. 
+
+3. 
+
+Vamos epetir o processo acima $NS$ vezes para produzir amostras independentes. 
+
+```{r}
+N <- 1000
+NS <- 500
+XX <- matrix(NA, nrow = N, ncol = NS)
+
+set.seed(100)
+w <- matrix(rnorm(N*NS), nrow = N, byrow = TRUE)
+XX[1,] <- w[1,]
+for(n in 2:N){
+  XX[n,] <- XX[n-1,] + w[n,]
+}
+```
+
+Agora, para cada $n = 100, 110, 120, ..., 1000$, vamos computar os valores dos quantis da amostra de tamanho NS dada pela $n-th$ linha da matriz. 
+
+```{r}
+q <- c(0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.96, 0.97, 0.98, 0.99)
+n_list <- seq(100,N,by = 10)
+
+QQ <- matrix(NA, nrow = length(n_list), ncol = length(q))
+
+for(i in 1:length(n_list)){
+  QQ[i,] <- quantile(XX[n_list[i],], probs = q)
+}
+colnames(QQ) <- q
+```
+
+4. 
+
+Considere o plot das colunas de QQ
+
+```{r}
+matplot(QQ, type = 'l', main = "QQ Plot de cada coluna")
+legend("right", legend = colnames(QQ), col = seq_len(ncol(QQ)), fill = seq_len(ncol(QQ)))
+```
+
+5. 
+
+Consideraremos o data set com os preços diários das ações Calpine para investigas estacionaridade. 
+
+```{r, message = FALSE, warning=FALSE}
+library(tseries)
+
+
+```
+
 
 # Exercício 6.13
 
+Assumimos que $X_t = \mu + X_{t-1} + W_t, t = 1,2,...$, onde $\mu$ é chamada de *drift* E $X_0 = x_0$ é conhecida. 
+
+1. Mostrarei por Indução.
+
+**Caso base** $t = 1:$ $X_1 = \mu + X_0 + W_1 = x_0 + \mu*1 + W_1$, como queríamos. 
+
+**Hipótese de Indução:** Suponha que valha para $t$. Assim:
+
+$$X_{t + 1} = \mu + X_t + W_{t+1} = \mu + x_0 + \mu t + \sum_{i=1}^t W_i + W_{t + 1} = x_0 + \mu(t + 1) + \sum_{i=1}^{t+1} W_i$$
+
+Logo a identidade é válida por indução, commo queríamos demonstrar. 
+
+2. Computemos média, variância e auto-covariância: 
+
+$$\mu_X(t) = E[X_t] = x_0 + \mu t + \sum_{i=1}^{t+1}E[W_i] = x_0 + \mu t$$
+$$\sigma^2_X(t) = Var(X_t) = \sum_{i=1}^{t}Var[W_i] = t\sigma^2$$
+$$
+\begin{split}
+\gamma_X(s,t) &= Cov(X_s, X_t) = E[X_sX_t] - (x_0 + \mu s)(x_0 + \mu t) \\
+&= x_0^2 + x_0\mu(t + s) + x_0E[\sum_{i=1}^t W_i + \sum_{i=1}^s W_i] \\ &+ \mu^2st + \mu (sE[\sum_{i=1}^t W_i] + tE[\sum_{i=1}^s W_i]) + E[\sum_{i=1}^t\sum_{j=1}^s W_iW_j] - x_0^2 - x_0\mu(t + s) - \mu^2st\\
+&= \sum_{i = i}^t\sum_{j=1}^s E[W_iW_j] = \min(s,t)\sigma^2
+\end{split}$$
+
+3. Não. $\{X_t\}_t$ são é estacionário porque as estatísticas variam com o tempo, inclusive a média, o que já não permite nem uma estacionaridade fraca. 
+
+4. $\nabla X_t = X_t - X_{t-1} = \mu + W_t$. Logo:
+
+$$\mu_X(t) = E[\nabla X_t] = \mu$$
+
+$$\sigma_X^2(t) = Var[\nabla X_t] = Var[W_t] = \sigma^2$$
+
+$$\gamma_X(s,t) = Cov(X_s, X_t) = E[X_sX_t] - \mu^2 = \mu^2 + \mu E[W_t + W_s] + E[W_tW_s] - \mu^2 = \sigma^2\mathbb{1}_{s=t}$$
+
+5. Ainda não posso garantir que o processo é estacionário, mas posso garantir, baseado na questão 4, que esse processo é, pelo menos, fracamente estacionário. 
+
+6. Seja $x_0 = 1.5, \mu = 0.5, n = 128$. Assuma o ruído branco como Gaussiano.
+
+```{r}
+n <- 128
+mu <- 0.5 
+x0 <- 1.5
+set.seed(100)
+w <- rnorm(n = n, mean = 0, sd = 1)
+x <- array(NA, dim = n+1)
+x[1] <- x0
+for(i in 2:(n+1)){
+  # note que tomo w[i-1], pois a sequência de x começa em x0
+  x[i] <- mu + x[i-1] + w[i-1]
+}
+plot(x, main = 'Amostra do modelo Random Walk com Drift', col = 'blue', type = 'l')
+abline(a = x0, b = mu, col = 'green')
+```
+
+Observamos que, como mostrado na reta verde, que tem intercepto $a = x_0$ e inclinação $b = \mu$, esses parâmetros indicam a reta que melhor se encaixa nos dados de random walk com drift. Isto é, lemos $\mu$ como a inclinação da melhor reta para os dados (claro que eles tem uma variação natural do processo) e $x_0$ como o intercepto, o que também já era esperado. 
+
+```{r}
+plot(x[2:(n+1)], x[1:n], col = 'blue')
+abline(a = 0, b = 1, col = 'green')
+```
+
+Nesse plot, podemos ver uma reta $x = y$. Isso acontece pela construção de nosso modelo, onde $y = x + \mu + e$, onde $\mu + e$ é basicamente uma constante que, mesque mude com o tempo, varia como uma normal.  
