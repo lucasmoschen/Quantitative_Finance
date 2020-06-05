@@ -95,18 +95,25 @@ Observe de fato, a convergência para os valores que damos para cada parâmetro.
 
 3. 
 
-Vamos epetir o processo acima $NS$ vezes para produzir amostras independentes. 
+Vamos repetir o processo acima $NS$ vezes para produzir amostras independentes. 
 
 ```{r}
 N <- 1000
 NS <- 500
-XX <- matrix(NA, nrow = N, ncol = NS)
+XX <- matrix(NA, nrow = N-1, ncol = NS)
 
 set.seed(100)
 w <- matrix(rnorm(N*NS), nrow = N, byrow = TRUE)
-XX[1,] <- w[1,]
 for(n in 2:N){
-  XX[n,] <- XX[n-1,] + w[n,]
+  w[n,] <- w[n-1,] + w[n,]
+}
+for(i in 2:N){
+  for(j in 1:NS){
+    phi1 <- phi1_hat(w[1:i,j])
+    var <- var_hat(w[1:i,j], phi1)
+    DF <- DF_test(phi1, var)
+    XX[i-1,j] <- DF
+  }
 }
 ```
 
@@ -114,7 +121,7 @@ Agora, para cada $n = 100, 110, 120, ..., 1000$, vamos computar os valores dos q
 
 ```{r}
 q <- c(0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.96, 0.97, 0.98, 0.99)
-n_list <- seq(100,N,by = 10)
+n_list <- seq(100, N-1,by = 10)
 
 QQ <- matrix(NA, nrow = length(n_list), ncol = length(q))
 
@@ -126,23 +133,60 @@ colnames(QQ) <- q
 
 4. 
 
-Considere o plot das colunas de QQ
+Considere o plot das colunas de QQ. Observe as convergências dos valores.
 
 ```{r}
 matplot(QQ, type = 'l', main = "QQ Plot de cada coluna")
-legend("right", legend = colnames(QQ), col = seq_len(ncol(QQ)), fill = seq_len(ncol(QQ)))
+legend("right", legend = colnames(QQ), col = seq_len(ncol(QQ)), fill = seq_len(ncol(QQ)), cex = 0.75)
 ```
 
 5. 
 
-Consideraremos o data set com os preços diários das ações Calpine para investigas estacionaridade. 
+Consideraremos o data set com os preços diários das ações Calpine para investigar estacionaridade. Os dados são referentes aos anos de 2017 e 2018. Aparentemente neste ano não há mais ações dessa empresa (pelo menos onde eu baixei os dados). Vou primeiro calcular tudo o necessário e depois comentar os resultados. 
 
 ```{r, message = FALSE, warning=FALSE}
 library(tseries)
+CPN <- read.csv("../data/CPN.csv")
+Price <- rev(CPN$Price)
+LRet <- diff(log(Price))
 
+phi1_price <- phi1_hat(Price)
+phi1_lret <- phi1_hat(LRet)
 
+var_price <- var_hat(Price, phi1_price)
+var_lret <- var_hat(Price, phi1_lret)
+
+DF_price <- DF_test(phi1_price, var_price)
+DF_lret <- DF_test(phi1_lret, var_lret)
+
+ADF_price <- adf.test(Price)
+ADF_lret <- adf.test(LRet)
 ```
 
+Agora vejamos a última linha da matriz QQ que será usada como referencial para o p-valor do teste coonstruído no texto. 
+```{r}
+p.value_price <- ecdf(QQ[90,])(DF_price)
+p.value_lret <- ecdf(QQ[90,])(DF_lret)
+print("------ Prices -------")
+print(DF_price)
+print(p.value_price)
+print("------ Log Return -------")
+print(DF_lret)
+print(p.value_lret)
+```
+
+Observe que o p-valor dos preços é bem alto, em torno de $2/3$. Enquanto isso, o p-valor do log retorno é bem baixo, na verdade o cálculo do Teste DF é menor do que o menor dos valores calculados pela matriz, o que é um tanto interessante. Desta forma, não é possível rejeitar a hipótese nula de que a série temporal é *random walk* no caso dos Preços, mas a hipótese é rejeitada para 1% no caso do retorno log.  
+
+Da mesma forma, usando a versão do teste aumentada: 
+
+```{r}
+print("------ Prices -------")
+print(ADF_price)
+print("------ Log Return -------")
+print(ADF_lret)
+```
+
+Observe que nesse caso, o Log Retorno é dado como estacionário, isto é, a hipótese de que a série de log retornos é um random walk foi rejeitada.
 
 # Exercício 6.13
 
