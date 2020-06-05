@@ -47,8 +47,7 @@ Assumimos que $\{X_t\}_t$ é da forma $X_t = \phi_1X_{t-1} + W_t$, para algum ru
 ```{r}
 set.seed(200)
 N <- 5000
-w <- rnorm(n = N)
-x[1] = w[1]
+x <- w <- rnorm(n = N)
 for (t in 2:N){
   x[t] <- x[t - 1] + w[t] 
 }
@@ -168,7 +167,8 @@ $$
 \gamma_X(s,t) &= Cov(X_s, X_t) = E[X_sX_t] - (x_0 + \mu s)(x_0 + \mu t) \\
 &= x_0^2 + x_0\mu(t + s) + x_0E[\sum_{i=1}^t W_i + \sum_{i=1}^s W_i] \\ &+ \mu^2st + \mu (sE[\sum_{i=1}^t W_i] + tE[\sum_{i=1}^s W_i]) + E[\sum_{i=1}^t\sum_{j=1}^s W_iW_j] - x_0^2 - x_0\mu(t + s) - \mu^2st\\
 &= \sum_{i = i}^t\sum_{j=1}^s E[W_iW_j] = \min(s,t)\sigma^2
-\end{split}$$
+\end{split}
+$$
 
 3. Não. $\{X_t\}_t$ são é estacionário porque as estatísticas variam com o tempo, inclusive a média, o que já não permite nem uma estacionaridade fraca. 
 
@@ -208,3 +208,90 @@ abline(a = 0, b = 1, col = 'green')
 ```
 
 Nesse plot, podemos ver uma reta $x = y$. Isso acontece pela construção de nosso modelo, onde $y = x + \mu + e$, onde $\mu + e$ é basicamente uma constante que, mesque mude com o tempo, varia como uma normal.  
+
+# Ajuste de Modelo ARIMA
+
+Considerarei este [**tutorial**](https://www.r-bloggers.com/forecasting-stock-returns-using-arima-model/) para fazer esse exercício. 
+
+```{r, message=FALSE, warning=FALSE}
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+```
+
+Considerarei os dados dos preços de ações da Apple.
+
+```{r, message=FALSE, warning = FALSE}
+getSymbols('AAPL', from = '2016-01-01', to = '2020-01-01')
+
+# Tomo os valores de fechamento
+stock_prices <- AAPL[,4] 
+stock <- diff(log(stock_prices))
+stock <- stock[!is.na(stock)]
+
+plot(stock, type = 'l', main = 'Log-Returns Plot')
+``` 
+
+Esses dados não tem periodicidade, dado que a função ``stl`` não identificou. Então, vamos prossequir dessa forma. Vamos fazer o teste ADF para checar a estacionaridade. Nesse caso:
+
+```{r}
+print(adf.test(stock))
+```
+
+Como o *p-value* é menor do que $0.01$, rejeitamos a hipótese nula e obtemos que a série é estacionária. Agora, vamos dividir o a lista em a lista em conjunto de treino e conjunto de teste. Vamos calcular nos pontos de treino as funções de Auto Covariância e Auto Correlação Parcial.
+
+```{r}
+breakpoint <- floor(nrow(stock)*(3/4))
+par(mfrow = c(1,1))
+acf.stock <- acf(stock[c(1:breakpoint),], main = 'ACF Plot', lag.max = 100)
+pacf.stock <- pacf(stock[c(1:breakpoint),], main = 'PACF Plot', lag.max = 100)
+```
+
+A partir desses plots, podemos obter as ordens do molelo AR e do modelo MA. A ACF do modelo AR decaí exponencialmente, enquando a PACF indica a ordem do modelo. Isso ocorre de forma inversa para o modelo MA. Analizando os picos, podemos selecionar a ordem AR = 3 e a ordem de MA = 2. Logo, teremos ARIMA(3,1,2), dado que realizei uma diferença. Além disso, fiz alguns testes com outros valores, mas valores maiores tiveram problemas de convergência e menores reduziram a acurácia.
+
+Podemos ver que a função de auto correlação dos resíduos é bem interessante, com os valores em grande maioria dentro de uma margem razoável. Também podemos visualizar que o resumo do ``fit`` é bem interessante, com os erros bem baixos. 
+
+```{r}
+stock_train <- stock[1:breakpoint,]
+stock_test <- stock[(breakpoint+1):nrow(stock),]
+fit <- arima(stock_train, order = c(3,0,2), include.mean = FALSE)
+plot(fit)
+summary(fit)
+acf(fit$residuals, main = "Residuals plot")
+```
+
+Agora vejamos o forecast.
+
+```{r}
+forecasted_series <- data.frame(Forecasted = numeric())
+
+for(b in breakpoint:(nrow(stock)-1)){
+  stock_train <- stock[1:b,]
+  
+  fit <- arima(stock_train, order = c(3,1,2), include.mean = FALSE)
+  arima.forecast = forecast(fit, h = 1, level = 99)
+  if(b == breakpoint){
+    summary(arima.forecast)
+  }
+  forecasted_series <- rbind(forecasted_series, arima.forecast$mean[1])
+  colnames(forecasted_series) <- c("Forecasted")
+}
+```
+
+Observe que as estimativas são próximas a média da disctruibição. Assim, vamos checar a acurácia do modelo ARIMA. EM vermelho vemos a previsão do modelo. Por fim, computamos o acerto em relação ao sinal que o modelo propôs. O interessante é que ficou só um pouco melhor do que jogar uma moeda.
+
+```{r}
+stock_test <- stock[(breakpoint+1):nrow(stock),]
+stock_test$Forecast <- forecasted_series$Forecasted
+plot(stock_test, type = 'l', main = 'Actual Returns Vs Forecasted Returns')
+```
+
+
+```{r}
+comparsion = merge(stock_test$AAPL.Close,stock_test$Forecast)
+comparsion$Accuracy = sign(comparsion$AAPL.Close)==sign(comparsion$Forecast)
+
+Accuracy_percentage = sum(comparsion$Accuracy == 1)*100/length(comparsion$Accuracy)
+print(Accuracy_percentage)
+```
