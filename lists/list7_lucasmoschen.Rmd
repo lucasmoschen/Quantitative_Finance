@@ -1,0 +1,161 @@
+---
+title: "Finanças Quantitativas: Lista 7"
+author: "Lucas Moschen"
+affiliation: "Fundação Getulio Vargas"
+date: "14 de junho de 2020"
+header-includes:
+  - \usepackage{cancel}
+output: pdf_document
+---
+
+# Exercício 8.1
+
+Suponha que $X$ e $\sigma^2$ são duas variáveis aleatórias e que $X|\sigma^2 \sim N(0,\sigma^2)$. Prove que: 
+
+$$\frac{E[X^4]}{Var[X]^2} = 3\left[1 + \frac{Var[\sigma^2]}{E[\sigma^2]^2}\right]$$
+Temos que: 
+
+$$
+\begin{split}
+E[X^4|\sigma] &= \int_{\mathbb{R}}x^4\frac{1}{\sqrt{2\pi}\sigma}e^{-x^2/2\sigma^2} dx\\
+&= 2\int_0^{\infty}4t^2\sigma^4\frac{1}{\sqrt{2\pi}\sigma}e^{-t}\frac{\sigma^2}{\sqrt{2t}\sigma}dt \\
+&= \frac{4\sigma^4}{\sqrt{\pi}}\int_0^{\infty} t^{3/2}e^{-t} \\
+&= \frac{4\sigma^4}{\sqrt{\pi}}\Gamma(5/2) =  \frac{4\sigma^4}{\sqrt{\pi}}\frac{3\sqrt{\pi}}{4} \\
+&= 3\sigma^4
+\end{split}
+$$
+$$
+\begin{split}
+Var[X|\sigma] &=  \sigma^2
+\end{split}
+$$
+Logo, utilizando as seguintes propriedades da probabilidade:
+$$
+E[X^4] = E[E[X^4|\sigma]] = 3E[\sigma^4] 
+$$
+$$
+Var[X]^2 = (E[Var[X|\sigma]] + Var[E[X|\sigma]])^2 = E[\sigma^2]^2
+$$
+pois $E[X|\sigma] = 0$.  
+Portanto: 
+$$
+\frac{E[X^4]}{Var[X]^2} = 3\frac{E[\sigma^4]}{E[\sigma^2]^2} = 3\frac{Var[\sigma^2] + E[\sigma^2]^2}{E[\sigma^2]^2} = 3\frac{E[\sigma^4]}{E[\sigma^2]^2} = 3\left(1 + \frac{Var[\sigma^2]}{E[\sigma^2]^2}\right),
+$$
+como queríamos mostrar. 
+
+# Exercício 8.3
+
+Assuma que $\{Y_t\}_t$ é uma série de log-retornos $GARCH(1,1)$ representada como:
+
+$$Y_t = \sigma_t\tilde{\epsilon}_t ~~~~~ \sigma^2_t = c + b\sigma^2_{t-1} + aY_{t-1}^2,$$
+onde assumimos $\{\tilde\epsilon_t\}_t \sim N(0,1)$ fortemente e os coeficiente são tais que $\sigma^2_t$ é estacionário. 
+
+1. Seja $\epsilon_t = Y_t^2 - \sigma_t^2$. Assim, temos que $Y_t^2 - \epsilon_t = c + b(Y_{t-1}^2 - \epsilon_{t-1}) + aY_{t-1}^2$, logo 
+$$Y_t^2 = c + (a + b)Y_{t-1}^2 + \epsilon_{t}- b\epsilon_{t-1},$$ 
+onde o erro é a diferença que explicitei. Se $Y_t|\sigma_t \sim N(0,\sigma_t^2),$ temos que $Y_t^2/\sigma_t^2|\sigma_t \sim \chi(1)$. Logo $\epsilon_t/\sigma_t^2 + 1 \mid \sigma_t \sim \chi(1)$.
+
+Se $\alpha = E[\epsilon_t^2]$, temos que:
+$$
+E[\epsilon_t^2|\sigma] = E[(Y_t^2 - \sigma_t^2)^2|\sigma] = E[Y_t^2|\sigma] - \sigma_t^2 = 0, 
+$$
+logo $\alpha = E[E[\sigma_t^2|\sigma]] = 0$ e não depende do tempo como já constatado. 
+
+Além disso, se $u_t = \epsilon_t + a\epsilon_{t-1} - b(a + b)\epsilon_{t-2}$ e $Y_{t-1} = c + (b + a)Y_{t-2}^2 + \epsilon_{t-1} - b\epsilon_{t-2}$, 
+$$
+\begin{split}
+Y_t^2 &= c + (b + a)(c + (b + a)Y_{t-2}^2 + \epsilon_{t-1} - b\epsilon_{t-2}) + \epsilon_t - b\epsilon_{t-1} \\
+&= c(1 + a + b) + (b + a)^2Y_{t-2}^2 + \epsilon_t + a\epsilon_{t-1} - b(b + a)\epsilon_{t-2} \\
+&= c(1 + a + b) + (b + a)^2Y_{t-2}^2 +u_t
+\end{split}
+$$
+
+2. Temos que $\beta = E[u_t^2] = Var[u_t] + E[u_t]^2$. Assim:
+$$
+\begin{split}
+Var[u_t] &=  Var[\epsilon_t + a\epsilon_{t-1} - b(a + b)\epsilon_{t-2}] \\
+&=Var[\epsilon_t] + a^2Var[\epsilon_{t-1}] + b^2(a + b)^2Var[\epsilon_{t-2}], \text{dado que são independentes}\\
+&= 1 + a^2 + b^2(a + b)^2, \text{dado que identicamente distribuidas}
+\end{split}
+$$
+$$
+E[u_t] = 0, \text{dado que as variáveis são i.i.d.}
+$$
+Logo, 
+$$
+\beta = 1 + a^2 + b^2(a + b)^2,
+$$
+que não depende do tempo. Além disso, se $k > 1$ 
+$$
+\begin{split}
+E[u_tu_{t - 2k}] &= E[(\epsilon_t + a\epsilon_{t-1} - b(a + b)\epsilon_{t-2})(\epsilon_{t-2k} + a\epsilon_{t-1-2k} - b(a + b)\epsilon_{t-2-2k})] \\
+&= E[\epsilon_t\epsilon_{t-2k}] + aE[\epsilon_t\epsilon_{t-1-2k}] - b(a+b)E[\epsilon_t\epsilon_{t-2-2k}] + \\ &+aE[\epsilon_{t-1}\epsilon_{t-2k}] +a^2E[\epsilon_{t-1}\epsilon_{t-1-2k}] - ab(a+b)E[\epsilon_{t-1}\epsilon_{t-2-2k}] - \\
+&-b(a + b)E[\epsilon_{t-2}\epsilon_{t-2k}] - abE[\epsilon_{t-2}\epsilon_{t-1-2k}] + b^2(a + b)^2E[\epsilon_{t-2}\epsilon_{t -2 -2k}] \\
+&= 0, \text{dado que as variáveis são independentes (k > 1 garante isso!) }
+\end{split}
+$$
+Mas se $k = 1$, $E[u_tu_{t-2k}] = -b(a + b)E[\epsilon_{t-2}^2] = -b(a+b)$, logo:
+$$
+\frac{E[u_tu_{t-2}]}{E[u_t^2]} = -\frac{b(a + b)}{1 + a^2  + b^2(a + b)^2}
+$$
+
+3. Considere a expressão:
+$$
+v_t = \frac{1}{1 - \lambda B^2}u_t,
+$$
+onde $B$ é o *backward shift operator*. Reescrevemos esse modelo como ARMA(1,1) em: $v_t + 0v_{t-1} - \lambda v_{t-2} = \epsilon_t + a\epsilon_{t-1} - b(a + b)\epsilon_{t-2}$
+
+$$
+\begin{split}
+E[v_{2t}v_{2t - 2s}] &= E[(\lambda v_{2t - 2} + u_{2t})v_{2t-2s}]\\  
+&= \lambda E[v_{2t - 2}v_{2t - 2s}] + E[u_{2t}v_{2t-2s}] \\
+&= \lambda E[v_{2t - 2}v_{2t - 2s}]\\
+&~...\\
+&= \lambda^{s-1}E[v_{2t - 2s + 2}v_{2t-2s}] \\
+&= \lambda^{s-1}E[v_tv_{t-2}], \text{pois a série temporal é WN}
+\end{split}
+$$
+Além disso, temos que: 
+$$
+\begin{split}
+E[u_t^2] &= E[v_t^2 - 2\lambda v_tv_{t-2} + \lambda^2v_{t-2}^2] \\
+&= E[v_t^2] - 2\lambda E[v_tv_{t-2}] + \lambda^2E[v_t^2], \text{pois a série temporal é WN} \\
+&\Rightarrow \\
+E[v_tv_{t-2}] &= \frac{1}{2\lambda}\left((1 + \lambda^2)E[v_t^2] - E[u_t^2]\right)
+\end{split}
+$$
+Temos também que:
+$$
+\begin{split}
+E[v_t^2] &= E[u_t^2] + 2\lambda E[v_{t-2}u_t] + \lambda^2E[v_t^2] \\
+&\Rightarrow \\
+E[v_t^2] &= \frac{1}{1 - \lambda^2}\left(E[u_t^2] + 2\lambda \cancel{E[\lambda v_{t-4}u_t]} + 2\lambda E[u_{t-2}u_t]\right)
+\end{split}
+$$
+Por fim: 
+$$
+\begin{split}
+E[v_tv_{t-2}] &= \frac{1}{2\lambda}\left((1 + \lambda^2)E[v_t^2] - E[u_t^2]\right) \\
+&= \frac{1}{2\lambda}\left((1 + \lambda^2)(\frac{1}{1 - \lambda^2}\left(E[u_t^2] + 2\lambda E[u_{t-2}u_t]\right)) - E[u_t^2]\right) \\
+&= \frac{1}{2\lambda(1 - \lambda^2)}\left(\cancel{E[u_t^2]} + \lambda^2E[u_t^2] + 2(1 + \lambda^2)\lambda E[u_{t-2}u_t] \cancel{- E[u_t^2]} + \lambda^2E[u_t^2]\right) \\
+&= \frac{1}{1 - \lambda^2}\left(\lambda E[u_t^2] + (1 + \lambda^2)E[u_tu_{t-2}]\right) \\
+&\Rightarrow \\
+E[v_{2t}v_{2t-2s}] &= \frac{\lambda^{s-1}}{1 - \lambda^2}[\lambda E[u_t^2] + (1+\lambda^2)E[u_tu_{t-2}]] \\
+\end{split}
+$$
+como queríamos demonstrar.
+
+4. Considere $\lambda$ a raiz da equação:
+$$
+\frac{\lambda}{1 + \lambda^2} = \frac{b(a+b)}{1 + a^2 + b^2(a + b)^2}
+$$
+então $\lambda(1 + a^2 + b^2(a + b)^2) = (1 + \lambda^2)b(a + b)$ e, pelo que caculamos em 2, $\lambda E[u_t^2] = - (1 + \lambda^2)E[u_tu_{t-2}]$, portanto,  se fizermos a substituição $x = t + s$, e usarmos a expressão calculada em 3, temos: 
+$$
+E[v_{2x - 2s}v_{2x}] = 0, s\geq 1
+$$
+Além disso: 
+$$
+E[v_{2t}^2] =
+$$
+
+5. Se $\overline{Y_t} = Y_{2t}$, temos que $\overline{Y_t}^2 \sim ARMA(1,1)$ e que a série $\{\overline{Y_t}\}_t$ admite a representação $\text{GARCH}(1,1)$. 
+
