@@ -154,8 +154,25 @@ E[v_{2x - 2s}v_{2x}] = 0, s\geq 1
 $$
 Além disso: 
 $$
-E[v_{2t}^2] =
+\begin{split}
+E[v_{2t}^2] &= E[u_t^2] + \lambda^2E[v_{2t-2}^2] + 2\lambda E[u_{2t}v_{2t-2}] \\
+&= E[u_t^2 ]+ \lambda^2E[v_{2t}^2] + 2\lambda(E[u_{2t}v_{2t-2}] + E[\lambda v_{2t-2}^2]) - E[\lambda v_{2t-2}^2]) \\
+&= E[u_t^2] + \lambda^2E[v_{2t}^2] + 2\lambda(E[(u_{2t} + \lambda v_{2t-2})v_{2t-2}] - \lambda E[v_{2t}^2]) \\ 
+&= E[u_t^2] + \lambda^2 E[v_{2t}^2] - 2\lambda^2E[v_{2t}^2] + 2\lambda \cancel{E[v_{2t}v_{2t-2}]} \\
+&\Rightarrow \\
+E[v_{2t}^2] &= \frac{1}{1 + \lambda^2}E[u_t^2] = \frac{\beta}{1 + \lambda^2},
+\end{split}
 $$
+como queríamos demonstrar. 
 
 5. Se $\overline{Y_t} = Y_{2t}$, temos que $\overline{Y_t}^2 \sim ARMA(1,1)$ e que a série $\{\overline{Y_t}\}_t$ admite a representação $\text{GARCH}(1,1)$. 
+
+Temos que $Y_{2t}^2 = c(1 + b + a) + (b + a)^2Y_{2t-2}^2 + u_{2t}$ como monstramos no item 1. Logo:
+
+$$
+\overline{Y_t}^2 = c(1 + b + a) + (b + a)^2\overline{Y_{t-1}}^2 + u_{2t} = c(1 + b + a) + (b + a)^2\overline{Y_{t-1}}^2 + v_{t},
+$$
+onde $v_t = u_{2t}$ indica a variável de erro. Note que essa essa é a representação ARMA(1,1).  
+
+Nesse sentido, podemos expressar $\overline{Y_t}$ como o modelo GARCH(1,1)$ de forma equivalente. 
 
